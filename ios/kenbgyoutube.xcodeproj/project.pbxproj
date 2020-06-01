@@ -766,7 +766,7 @@
 				INFOPLIST_FILE = kenbgyoutube/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 0.82;
+				MARKETING_VERSION = 0.83;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -792,7 +792,7 @@
 				INFOPLIST_FILE = kenbgyoutube/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 0.82;
+				MARKETING_VERSION = 0.83;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
