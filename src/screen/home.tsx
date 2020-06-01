@@ -20,10 +20,12 @@ import Modal from 'react-native-modal';
 import {CurrentPlayingViewContext} from '../context/currentplayingview-context';
 import {UserDataContext} from '../context/userdata-context';
 import CustomeTopNavigation from '../components/customtopnaviagtion';
-import useStorage, {
+import {
   PlaylistsStorage,
   PlaylistItemType,
   FavoritesType,
+  getPlaylists,
+  removePlaylist,
 } from '../utils/usestorage';
 import FavoritesList from '../components/favoriteslist';
 import {RootStackParamList} from '../navigation/navigation';
@@ -32,69 +34,19 @@ const {width: screenWidth} = Dimensions.get('window');
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>;
 
-const DEMO = [
-  {
-    videoId: 'TomDxFRgeN8',
-    title:
-      'HYOLYN(효린) "말 없이 안아줘(Hug Me Silently) (feat. Crucial Star)" Official Audio',
-    videoTimeLength: '4:09',
-    thumbnailUrl:
-      'https://i.ytimg.com/vi/TomDxFRgeN8/hqdefault.jpg?s…j0AgKJDeAE=&rs=AOn4CLBW6HcnyhrvOLoJTKbC27SMjRGEmQ',
-  },
-  {
-    videoId: 'lyfy8KwOrV0',
-    title:
-      "TAEYEON (태연) - '그대라는 시 (All About  You, Hotel Del Luna OST)' (Cover by. Blue.D)",
-    videoTimeLength: '3:40',
-    thumbnailUrl:
-      'https://i.ytimg.com/vi/lyfy8KwOrV0/hqdefault.jpg?s…j0AgKJDeAE=&rs=AOn4CLB10hwwg9v0RyD1_5sT6znsMl_hcQ',
-  },
-  {
-    videoId: 'TomDxFRgeN8',
-    title:
-      'HYOLYN(효린) "말 없이 안아줘(Hug Me Silently) (feat. Crucial Star)" Official Audio',
-    videoTimeLength: '4:09',
-    thumbnailUrl:
-      'https://i.ytimg.com/vi/TomDxFRgeN8/hqdefault.jpg?s…j0AgKJDeAE=&rs=AOn4CLBW6HcnyhrvOLoJTKbC27SMjRGEmQ',
-  },
-  {
-    videoId: 'lyfy8KwOrV0',
-    title:
-      "TAEYEON (태연) - '그대라는 시 (All About  You, Hotel Del Luna OST)' (Cover by. Blue.D)",
-    videoTimeLength: '3:40',
-    thumbnailUrl:
-      'https://i.ytimg.com/vi/lyfy8KwOrV0/hqdefault.jpg?s…j0AgKJDeAE=&rs=AOn4CLB10hwwg9v0RyD1_5sT6znsMl_hcQ',
-  },
-  {
-    videoId: 'TomDxFRgeN8',
-    title:
-      'HYOLYN(효린) "말 없이 안아줘(Hug Me Silently) (feat. Crucial Star)" Official Audio',
-    videoTimeLength: '4:09',
-    thumbnailUrl:
-      'https://i.ytimg.com/vi/TomDxFRgeN8/hqdefault.jpg?s…j0AgKJDeAE=&rs=AOn4CLBW6HcnyhrvOLoJTKbC27SMjRGEmQ',
-  },
-  {
-    videoId: 'lyfy8KwOrV0',
-    title:
-      "TAEYEON (태연) - '그대라는 시 (All About  You, Hotel Del Luna OST)' (Cover by. Blue.D)",
-    videoTimeLength: '3:40',
-    thumbnailUrl:
-      'https://i.ytimg.com/vi/lyfy8KwOrV0/hqdefault.jpg?s…j0AgKJDeAE=&rs=AOn4CLB10hwwg9v0RyD1_5sT6znsMl_hcQ',
-  },
-];
 export default ({
   navigation,
 }: {
   navigation: HomeScreenNavigationProp;
 }): React.ReactElement => {
   const [playlists, setPlaylists] = useState<
-    PlaylistsStorage | {type: 'more'}[]
+    (PlaylistsStorage | {type: 'more'})[] | []
   >([]);
 
-  const [limitFavorite, setLimitFavorites] = useState<PlaylistItemType[]>([]);
+  const [limitFavorite, setLimitFavorites] = useState<PlaylistItemType>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState<any>(false);
-  const {getPlaylists, removePlaylist, getFavorites} = useStorage();
+
   const {visible, dispatch} = useContext(CurrentPlayingViewContext);
   const {favorites} = useContext(UserDataContext);
   const styles = useStyleSheet(themedStyles);
@@ -126,7 +78,6 @@ export default ({
       title,
       thumbnail,
       dateTime: dateTime || '',
-      favorites,
     });
   };
 
@@ -147,7 +98,9 @@ export default ({
     setModalVisible(!modalVisible);
     await getPlaylistsFromStorage();
   };
-  const onPlaylistMore = () => {};
+  const onPlaylistMore = () => {
+    navigation.navigate('Playlists');
+  };
   const renderModalContent = () => {
     if (selectedItem) {
       return (
@@ -293,7 +246,12 @@ const themedStyles = StyleService.create({
   moreContainer: {
     paddingHorizontal: 5,
   },
-  playlistCardContainer: {height: 200, marginVertical: 10},
+  playlistCardContainer: {
+    position: 'relative',
+    height: 200,
+    marginHorizontal: -10,
+    marginVertical: 10,
+  },
   userMenu: {
     justifyContent: 'flex-end',
     alignSelf: 'flex-end',
@@ -336,6 +294,7 @@ const themedStyles = StyleService.create({
   },
   container: {
     flex: 1,
+    marginHorizontal: 10,
   },
   text: {
     textAlign: 'center',

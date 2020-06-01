@@ -14,6 +14,7 @@ import {PlaylistItemType} from '../utils/usestorage';
 import {Types} from '../context/currentplayingview-context';
 import {shuffle} from '../utils/utils';
 import LikeButton from '../components/likebutton';
+import {formatTime} from '../utils/utils';
 
 const listFootMarginBottom = hasNotch() ? 100 + 34 : 100;
 const {width: screenWidth} = Dimensions.get('window');
@@ -92,7 +93,7 @@ export default (props: Props) => {
           !showHeart ? (
             <Layout style={styles.videoLengthContainer}>
               <Text category="s2" appearance={'hint'}>
-                {item.videoTimeLength}
+                {formatTime(item.videoTimeLength)}
               </Text>
             </Layout>
           ) : (

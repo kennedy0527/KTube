@@ -3,7 +3,7 @@ import {StatusBar} from 'react-native';
 import {ApplicationProvider} from '@ui-kitten/components';
 import * as eva from '@eva-design/eva';
 import Icons from 'react-native-alternate-icons';
-import useStorage from '../utils/usestorage';
+import {getTheme, saveTheme} from '../utils/usestorage';
 
 interface ThemeProps {
   [key: string]: {
@@ -36,7 +36,6 @@ export default ({
 }: {
   children: React.ReactElement;
 }): React.ReactElement => {
-  const {getTheme, saveTheme} = useStorage();
   const [theme, setTheme] = useState('light');
   useEffect(() => {
     const bootstrapAsync = async () => {

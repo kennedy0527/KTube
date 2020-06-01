@@ -151,19 +151,19 @@ export default () => {
 
       if (videoInfo) {
         // console.log(videoUrl);
-        const min = parseInt(
-          Number(videoInfo.videoDetails.lengthSeconds) / 60,
-          10,
-        );
-        const sec = Number(videoInfo.videoDetails.lengthSeconds) - 60 * min;
-        const videoTimeLength = `${min}:${sec < 10 ? `0${sec}` : sec}`;
+        // const min = parseInt(
+        //   Number(videoInfo.videoDetails.lengthSeconds) / 60,
+        //   10,
+        // );
+        // const sec = Number(videoInfo.videoDetails.lengthSeconds) - 60 * min;
+        // const videoTimeLength = `${min}:${sec < 10 ? `0${sec}` : sec}`;
         const title = videoInfo.videoDetails.title.replace(/\+/g, ' ');
         const thumbnails = videoInfo.videoDetails.thumbnail.thumbnails;
 
         return {
           videoId,
           title,
-          videoTimeLength,
+          videoTimeLength: Number(videoInfo.videoDetails.lengthSeconds) | 0,
           thumbnails,
         };
       }
@@ -278,7 +278,7 @@ export default () => {
     | {
         videoId: string;
         title: string;
-        videoTimeLength: string;
+        videoTimeLength: number;
         thumbnailUrl: string;
       }
     | undefined => {
@@ -288,16 +288,16 @@ export default () => {
           videoDetails: {videoId, title, lengthSeconds, thumbnail},
         } = videoInfo;
         // console.log(videoInfo);
-        const min = parseInt(Number(lengthSeconds) / 60, 10);
-        const sec = Number(lengthSeconds) - 60 * min;
-        const videoTimeLength = `${min}:${sec < 10 ? `0${sec}` : sec}`;
+        // const min = parseInt(Number(lengthSeconds) / 60, 10);
+        // const sec = Number(lengthSeconds) - 60 * min;
+        // const videoTimeLength = `${min}:${sec < 10 ? `0${sec}` : sec}`;
 
         const thumbnailUrl = thumbnail.thumbnails[3].url;
 
         return {
           videoId,
           title,
-          videoTimeLength,
+          videoTimeLength: Number(lengthSeconds) | 0,
           thumbnailUrl,
         };
       }

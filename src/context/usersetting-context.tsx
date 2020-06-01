@@ -1,5 +1,5 @@
 import React, {createContext, useState, useEffect} from 'react';
-import useStorage from '../utils/usestorage';
+import {getUserSetting} from '../utils/usestorage';
 
 type UserSettingContextProps = {
   sort: number;
@@ -14,7 +14,7 @@ const {Provider} = UserSettingContext;
 
 export default ({children}: {children: React.ReactElement}) => {
   const [sortData, setSortData] = useState(0);
-  const {getUserSetting, saveUserSetting} = useStorage();
+
   useEffect(() => {
     const bootstrapAsync = async () => {
       try {

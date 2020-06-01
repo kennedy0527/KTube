@@ -19,7 +19,7 @@ import {
 import {RenderProp} from '@ui-kitten/components/devsupport';
 import Modal from 'react-native-modal';
 import useYoutube from '../utils/useyoutube';
-import useStorage from '../utils/usestorage';
+import {savePlaylist} from '../utils/usestorage';
 import {ClearIcon} from './icons';
 
 type Props = {
@@ -42,7 +42,7 @@ export default ({
     fetchWebPage,
     analyzeVideoInfo,
   } = useYoutube();
-  const {savePlaylist} = useStorage();
+
   const styles = useStyleSheet(themedStyles);
   const onCloseModal = () => {
     Keyboard.dismiss();

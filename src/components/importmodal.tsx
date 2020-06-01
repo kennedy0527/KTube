@@ -19,7 +19,7 @@ import {useNavigation} from '@react-navigation/native';
 
 import {CloseIcon} from '../components/icons';
 import useYoutube from '../utils/useyoutube';
-import useStorage from '../utils/usestorage';
+import {savePlaylist} from '../utils/usestorage';
 
 type Props = {
   visible: boolean;
@@ -34,7 +34,6 @@ export default ({
   setUserMenuVisible,
   refreshPlaylist,
 }: Props): React.ReactElement => {
-  const usetheme = useTheme();
   const navigation = useNavigation();
   const [isFetching, setIsFetching] = useState(false);
   const [playlists, setPlaylists] = useState<any[]>([]);
@@ -46,7 +45,7 @@ export default ({
     fetchWebPage,
     analyzeVideoInfo,
   } = useYoutube();
-  const {savePlaylist} = useStorage();
+
   const styles = useStyleSheet(themedStyles);
   const onCloseModal = () => {
     onDismiss();
@@ -166,27 +165,29 @@ export default ({
         onModalShow={onShow}
         onModalHide={onModalDismiss}>
         <SafeAreaView style={styles.modalWrapper}>
-          <TopNavigation
-            alignment="center"
-            accessoryLeft={CloseModalAction}
-            accessoryRight={ImportAction}
-          />
-          <List
-            style={styles.list}
-            data={playlists}
-            renderItem={renderPlaylists}
-            refreshing={isFetching}
-            onRefresh={onRefresh}
-          />
-          <Modal
-            animationIn={'fadeIn'}
-            animationOut={'fadeOut'}
-            isVisible={importing}
-            style={styles.spinnerModal}>
-            <Layout style={styles.spinnerContainer}>
-              <Spinner status="info" />
-            </Layout>
-          </Modal>
+          <Layout style={styles.container}>
+            <TopNavigation
+              alignment="center"
+              accessoryLeft={CloseModalAction}
+              accessoryRight={ImportAction}
+            />
+            <List
+              style={styles.list}
+              data={playlists}
+              renderItem={renderPlaylists}
+              refreshing={isFetching}
+              onRefresh={onRefresh}
+            />
+            <Modal
+              animationIn={'fadeIn'}
+              animationOut={'fadeOut'}
+              isVisible={importing}
+              style={styles.spinnerModal}>
+              <Layout style={styles.spinnerContainer}>
+                <Spinner status="info" />
+              </Layout>
+            </Modal>
+          </Layout>
         </SafeAreaView>
       </Modal>
     </>
@@ -204,6 +205,10 @@ const themedStyles = StyleService.create({
   list: {
     flex: 1,
     backgroundColor: 'background-basic-color-1',
+  },
+  container: {
+    flex: 1,
+    marginHorizontal: 10,
   },
   spinnerModal: {alignItems: 'center'},
   spinnerContainer: {

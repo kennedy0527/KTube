@@ -4,6 +4,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 import HomeScreen from '../screen/home';
 import VideosScreen from '../screen/videos';
 import FavoritesScreen from '../screen/favorites';
+import PlaylistsScreen from '../screen/playlists';
 import CurrentplayingView from '../components/currentplayingview';
 import ErrorModal from '../components/errormodal';
 import {PlaylistItemType, FavoritesType} from '../utils/usestorage';
@@ -14,9 +15,9 @@ export type RootStackParamList = {
     title: string;
     thumbnail: string;
     dateTime: Date | string;
-    favorites: FavoritesType;
   };
   Favorites: undefined;
+  Playlists: undefined;
 };
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -28,6 +29,7 @@ export const AppNavigator = (): React.ReactElement => {
           <Stack.Screen name="Home" component={HomeScreen} />
           <Stack.Screen name="Videos" component={VideosScreen} />
           <Stack.Screen name="Favorites" component={FavoritesScreen} />
+          <Stack.Screen name="Playlists" component={PlaylistsScreen} />
         </Stack.Navigator>
       </NavigationContainer>
       <ErrorModal />

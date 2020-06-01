@@ -2,7 +2,7 @@ import React, {createContext, useMemo, useReducer, useEffect} from 'react';
 import {GoogleSignin, statusCodes} from '@react-native-community/google-signin';
 import type {User} from '@react-native-community/google-signin';
 import AsyncStorage from '@react-native-community/async-storage';
-import useStorage from '../utils/usestorage';
+import {saveCurrentUserInfo} from '../utils/usestorage';
 import {IOS_CLIENT_ID} from 'react-native-dotenv';
 
 export enum Types {
@@ -138,7 +138,7 @@ export default ({
     err: false,
     currentUser: null,
   });
-  const {saveCurrentUserInfo} = useStorage();
+
   useEffect(() => {
     const bootstrapAsync = async () => {
       try {
