@@ -115,63 +115,65 @@ export default ({navigation}: {navigation: FavoriteScreenNavigationProp}) => {
   }, [favorites]);
   return (
     <SafeAreaView style={styles.wrapper}>
-      <CustomeTopNavigation
-        customLeft={CustomBackAction}
-        title="Home"
-        alignment="start"
-      />
-      <FavoritesList
-        favorites={favoriteVideos}
-        visible={visible}
-        dispatch={dispatch}
-        ListHeaderComponent={() => (
-          <Layout style={styles.listHeader}>
-            <Layout style={styles.listHeaderTexts}>
-              <Text category="h2">Favorites</Text>
-            </Layout>
+      <Layout style={styles.container}>
+        <CustomeTopNavigation
+          customLeft={CustomBackAction}
+          title="Home"
+          alignment="start"
+        />
+        <FavoritesList
+          favorites={favoriteVideos}
+          visible={visible}
+          dispatch={dispatch}
+          ListHeaderComponent={() => (
+            <Layout style={styles.listHeader}>
+              <Layout style={styles.listHeaderTexts}>
+                <Text category="h2">Favorites</Text>
+              </Layout>
 
-            <Layout style={styles.listHeaderBtns}>
-              <Button
-                style={styles.btn}
-                activeOpacity={0.5}
-                status="primary"
-                onPress={onPlayPress}
-                accessoryLeft={() => <PlayIcon style={styles.icon} />}>
-                {() => <Text category="s1">Play</Text>}
-              </Button>
-              <Button
-                style={styles.btn}
-                activeOpacity={0.5}
-                status="primary"
-                onPress={onShufflePress}
-                accessoryLeft={() => <ShuffleIcon style={styles.icon} />}>
-                {() => <Text category="s1">Shuffle</Text>}
-              </Button>
+              <Layout style={styles.listHeaderBtns}>
+                <Button
+                  style={styles.btn}
+                  activeOpacity={0.5}
+                  status="primary"
+                  onPress={onPlayPress}
+                  accessoryLeft={() => <PlayIcon style={styles.icon} />}>
+                  {() => <Text category="s1">Play</Text>}
+                </Button>
+                <Button
+                  style={styles.btn}
+                  activeOpacity={0.5}
+                  status="primary"
+                  onPress={onShufflePress}
+                  accessoryLeft={() => <ShuffleIcon style={styles.icon} />}>
+                  {() => <Text category="s1">Shuffle</Text>}
+                </Button>
+              </Layout>
+              <Layout style={styles.sortContainer}>
+                <TouchableOpacity onPress={onSortPress}>
+                  <Layout style={styles.sortBtnInner}>
+                    {favorites.sort === 0 ? (
+                      <ArrowUpIcon
+                        style={styles.sortIcon}
+                        fill={usetheme['text-basic-color']}
+                      />
+                    ) : (
+                      <ArrowDownIcon
+                        style={styles.sortIcon}
+                        fill={usetheme['text-basic-color']}
+                      />
+                    )}
+                    <Text>Sort</Text>
+                  </Layout>
+                </TouchableOpacity>
+              </Layout>
             </Layout>
-            <Layout style={styles.sortContainer}>
-              <TouchableOpacity onPress={onSortPress}>
-                <Layout style={styles.sortBtnInner}>
-                  {favorites.sort === 0 ? (
-                    <ArrowUpIcon
-                      style={styles.sortIcon}
-                      fill={usetheme['text-basic-color']}
-                    />
-                  ) : (
-                    <ArrowDownIcon
-                      style={styles.sortIcon}
-                      fill={usetheme['text-basic-color']}
-                    />
-                  )}
-                  <Text>Sort</Text>
-                </Layout>
-              </TouchableOpacity>
-            </Layout>
-          </Layout>
-        )}
-        ListFooterComponent={() => (
-          <Text>{`Total ${favorites.videos.length} videos`}</Text>
-        )}
-      />
+          )}
+          ListFooterComponent={() => (
+            <Text>{`Total ${favorites.videos.length} videos`}</Text>
+          )}
+        />
+      </Layout>
     </SafeAreaView>
   );
 };
@@ -180,6 +182,10 @@ const themedStyles = StyleService.create({
     position: 'relative',
     flex: 1,
     backgroundColor: 'background-basic-color-1',
+  },
+  container: {
+    flex: 1,
+    marginHorizontal: 10,
   },
   listHeader: {
     marginTop: 5,

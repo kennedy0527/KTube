@@ -30,6 +30,7 @@ import FastImage from 'react-native-fast-image';
 import {format} from 'date-fns';
 import {hasNotch} from 'react-native-device-info';
 import CustomeTopNavigation from '../components/customtopnaviagtion';
+
 import useYoutube from '../utils/useyoutube';
 import {
   PlaylistsStorage,
@@ -53,20 +54,11 @@ import {
   CurrentPlayingViewContext,
   Types,
 } from '../context/currentplayingview-context';
+import {UserDataContext} from '../context/userdata-context';
 import {UserSettingContext} from '../context/usersetting-context';
+import {RootStackParamList} from '../navigation/navigation';
 
 const listFootMarginBottom = hasNotch() ? 100 + 34 : 100 + 34;
-
-type RootStackParamList = {
-  Home: undefined;
-  Videos: {
-    playlistId: string;
-    title: string;
-    thumbnail: string;
-    dateTime: Date | string;
-    favorites: FavoritesType;
-  };
-};
 
 type VideosScreenRouteProp = RouteProp<RootStackParamList, 'Videos'>;
 
@@ -326,7 +318,7 @@ export default ({route, navigation}: Props): React.ReactElement => {
     analyzeVideoUrl,
     analyzeVideoInfo,
   } = useYoutube();
-  const {playlistId, title, thumbnail, dateTime, favorites} = route.params;
+  const {playlistId, title, thumbnail, dateTime} = route.params;
   const [playlistTitle, setPlaylistTitle] = useState<string>(title);
   const [playlistDateTime, setPlaylistDateTime] = useState<Date | string>(
     dateTime,
@@ -334,6 +326,7 @@ export default ({route, navigation}: Props): React.ReactElement => {
   const {visible, currentPlaying, dispatch} = useContext(
     CurrentPlayingViewContext,
   );
+  const {favorites} = useContext(UserDataContext);
 
   const listRef = useRef<List>(null);
   useEffect(() => {
@@ -450,12 +443,12 @@ export default ({route, navigation}: Props): React.ReactElement => {
           flex: 1,
           backgroundColor: usetheme['background-basic-color-1'],
         }}>
-        <CustomeTopNavigation
-          customLeft={CustomBackAction}
-          title="Home"
-          alignment="start"
-        />
         <Layout style={styles.container}>
+          <CustomeTopNavigation
+            customLeft={CustomBackAction}
+            title="Home"
+            alignment="start"
+          />
           <VideosList
             listRef={listRef}
             videoItems={videoItems}
@@ -481,6 +474,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
+    marginHorizontal: 10,
   },
   videoThumbnail: {
     height: '100%',

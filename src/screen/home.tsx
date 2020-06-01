@@ -90,10 +90,10 @@ export default ({
   navigation: HomeScreenNavigationProp;
 }): React.ReactElement => {
   const [playlists, setPlaylists] = useState<
-    PlaylistsStorage | {type: 'more'}[]
+    (PlaylistsStorage | {type: 'more'})[] | []
   >([]);
 
-  const [limitFavorite, setLimitFavorites] = useState<PlaylistItemType[]>([]);
+  const [limitFavorite, setLimitFavorites] = useState<PlaylistItemType>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState<any>(false);
 
@@ -128,7 +128,6 @@ export default ({
       title,
       thumbnail,
       dateTime: dateTime || '',
-      favorites,
     });
   };
 
@@ -149,7 +148,9 @@ export default ({
     setModalVisible(!modalVisible);
     await getPlaylistsFromStorage();
   };
-  const onPlaylistMore = () => {};
+  const onPlaylistMore = () => {
+    navigation.navigate('Playlists');
+  };
   const renderModalContent = () => {
     if (selectedItem) {
       return (
@@ -295,7 +296,12 @@ const themedStyles = StyleService.create({
   moreContainer: {
     paddingHorizontal: 5,
   },
-  playlistCardContainer: {height: 200, marginVertical: 10},
+  playlistCardContainer: {
+    position: 'relative',
+    height: 200,
+    marginHorizontal: -10,
+    marginVertical: 10,
+  },
   userMenu: {
     justifyContent: 'flex-end',
     alignSelf: 'flex-end',
@@ -338,6 +344,7 @@ const themedStyles = StyleService.create({
   },
   container: {
     flex: 1,
+    marginHorizontal: 10,
   },
   text: {
     textAlign: 'center',
