@@ -29,7 +29,7 @@ import {
 } from '../context/userdata-context';
 import FavoritesList from '../components/favoriteslist';
 import {RootStackParamList} from '../navigation/navigation';
-import {shuffle} from '../utils/utils';
+import {shuffle, convertToDuration} from '../utils/utils';
 import useTraceUpdate from '../utils/usetraceupdate';
 
 type FavoriteScreenNavigationProp = StackNavigationProp<
@@ -134,7 +134,12 @@ export default ({navigation}: {navigation: FavoriteScreenNavigationProp}) => {
                   style={{
                     marginTop: 5,
                     color: 'lightgray',
-                  }}>{`${favorites.videos.length} videos`}</Text>
+                  }}>{`${favorites.videos.length} videos, ${convertToDuration(
+                  favorites.videos.reduce(
+                    (accumulator, video) => accumulator + video.videoTimeLength,
+                    0,
+                  ),
+                )}`}</Text>
               </Layout>
 
               <Layout style={styles.listHeaderBtns}>
