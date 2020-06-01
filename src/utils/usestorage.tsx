@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 export type PlaylistItemType = {
   videoId: string;
   title: string;
-  videoTimeLength: string;
+  videoTimeLength: number;
   thumbnailUrl: string;
 };
 export type PlaylistsStorage = {

@@ -19,14 +19,11 @@ import {
 } from '../context/currentplayingview-context';
 import {VideoPlayerRef} from './videoplayer';
 import useTraceUpdate from '../utils/usetraceupdate';
+import {PlaylistItemType} from '../utils/usestorage';
+import {formatTime} from '../utils/utils';
 
 type VideoRowProps = {
-  item: {
-    thumbnailUrl: string;
-    title: string;
-    videoTimeLength: string;
-    videoId: string;
-  };
+  item: PlaylistItemType;
   onPlaylisitemPress: (item: any, index: number) => void;
   setPlayingAnimRef: (ref: LottieAnimationRef, index: number) => void;
   index: number;
@@ -67,7 +64,7 @@ const VideoRow = memo((props: VideoRowProps) => {
       accessoryRight={() => (
         <Layout style={styles.videoLengthContainer}>
           <Text category="s2" appearance={'hint'}>
-            {item.videoTimeLength}
+            {formatTime(item.videoTimeLength)}
           </Text>
         </Layout>
       )}
@@ -78,12 +75,7 @@ const VideoRow = memo((props: VideoRowProps) => {
 
 type Props = {
   videosListRef: any;
-  videoItems: Array<{
-    videoId: string;
-    title: string;
-    videoTimeLength: string;
-    thumbnails: string;
-  }>;
+  videoItems: PlaylistItemType[];
   setPlayingAnimRef: (ref: LottieAnimationRef, index: number) => void;
   getPlayingAnimRef: (index: number) => LottieAnimationRef;
   videoPlayerRef: MutableRefObject<VideoPlayerRef | undefined>;

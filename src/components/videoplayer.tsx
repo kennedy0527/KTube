@@ -21,16 +21,16 @@ import {
 } from 'react-native';
 import {Text} from '@ui-kitten/components';
 import Video from 'react-native-video';
-import padStart from 'lodash/padStart';
 import {LottieAnimationRef} from './lottieanimation';
 import {CurrentPlayingContext, Types} from '../context/currentplaying-context';
 import {UserDataContext} from '../context/userdata-context';
-
+import {formatTime} from '../utils/utils';
 import {
   CurrentPlayingViewContext,
   Types as CurrentPlayingViewTypes,
 } from '../context/currentplayingview-context';
 import useYoutube from '../utils/useyoutube';
+import {PlaylistItemType} from '../utils/usestorage';
 import {
   PauseIcon,
   PlayIcon,
@@ -45,27 +45,8 @@ import useTraceUpdate from '../utils/usetraceupdate';
 
 const {width: screenWidth} = Dimensions.get('window');
 
-const findIndex = (
-  videoItems: Array<{
-    videoId: string;
-    title: string;
-    videoTimeLength: string;
-    thumbnailUrl: string;
-  }>,
-  videoId: string,
-) => {
+const findIndex = (videoItems: PlaylistItemType[], videoId: string) => {
   return videoItems.map((item) => item.videoId).indexOf(videoId);
-};
-
-const formatTime = (time: number) => {
-  const formattedHours = padStart(Math.floor(time / 3600).toFixed(0), 2, 0);
-  const formattedMinutes = padStart(Math.floor(time / 60).toFixed(0), 2, 0);
-  const formattedSeconds = padStart(Math.floor(time % 60).toFixed(0), 2, 0);
-  if (formattedHours === '00') {
-    return `${formattedMinutes}:${formattedSeconds}`;
-  } else {
-    return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
-  }
 };
 
 const calculateSeekerPosition = (currentTime: number, duration: number) => {

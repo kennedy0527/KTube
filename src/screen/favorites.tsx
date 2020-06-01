@@ -129,6 +129,12 @@ export default ({navigation}: {navigation: FavoriteScreenNavigationProp}) => {
             <Layout style={styles.listHeader}>
               <Layout style={styles.listHeaderTexts}>
                 <Text category="h2">Favorites</Text>
+                <Text
+                  category="s2"
+                  style={{
+                    marginTop: 5,
+                    color: 'lightgray',
+                  }}>{`${favorites.videos.length} videos`}</Text>
               </Layout>
 
               <Layout style={styles.listHeaderBtns}>
@@ -168,9 +174,6 @@ export default ({navigation}: {navigation: FavoriteScreenNavigationProp}) => {
                 </TouchableOpacity>
               </Layout>
             </Layout>
-          )}
-          ListFooterComponent={() => (
-            <Text>{`Total ${favorites.videos.length} videos`}</Text>
           )}
         />
       </Layout>

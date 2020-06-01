@@ -30,7 +30,6 @@ import FastImage from 'react-native-fast-image';
 import {format} from 'date-fns';
 import {hasNotch} from 'react-native-device-info';
 import CustomeTopNavigation from '../components/customtopnaviagtion';
-
 import useYoutube from '../utils/useyoutube';
 import {
   PlaylistsStorage,
@@ -39,7 +38,7 @@ import {
   getPlaylists,
   savePlaylist,
 } from '../utils/usestorage';
-import {shuffle} from '../utils/utils';
+import {shuffle, formatTime} from '../utils/utils';
 import {
   BackIcon,
   ShuffleIcon,
@@ -48,7 +47,6 @@ import {
   ArrowDownIcon,
 } from '../components/icons';
 import LikeButton from '../components/likebutton';
-
 import useTraceUpdate from '../utils/usetraceupdate';
 import {
   CurrentPlayingViewContext,
@@ -72,13 +70,9 @@ type Props = {
 };
 
 type VideoRowProps = {
-  thumbnailUrl: string;
-  title: string;
-  videoId: string;
-  videoTimeLength: string;
   onPress: (videoId: string) => void;
   like: boolean;
-};
+} & PlaylistItemType;
 
 const VideoRow = ({
   thumbnailUrl,
@@ -108,7 +102,9 @@ const VideoRow = ({
               }}
             />
             <View style={styles.videoLength}>
-              <Text style={{color: 'white'}}>{videoTimeLength}</Text>
+              <Text style={{color: 'white'}}>
+                {formatTime(videoTimeLength)}
+              </Text>
             </View>
           </Layout>
         )}

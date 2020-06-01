@@ -1,5 +1,5 @@
 import React, {createContext, useReducer, useMemo, useEffect} from 'react';
-
+import {PlaylistItemType} from '../utils/usestorage';
 export enum Types {
   SetVideos = 'SET_VIDEOS',
   PlayerIsReadyChanged = 'PLAYER_IS_READY',
@@ -38,12 +38,7 @@ type State = {
     thumbnailUrl: string;
     title: string;
   };
-  videoItems: Array<{
-    videoId: string;
-    title: string;
-    videoTimeLength: string;
-    thumbnailUrl: string;
-  }>;
+  videoItems: PlaylistItemType[];
 };
 const reducer = (prevState: State, action: CurrentPlayingAction) => {
   switch (action.type) {
@@ -67,12 +62,7 @@ const reducer = (prevState: State, action: CurrentPlayingAction) => {
   }
 };
 type CurrentPlayingContextProps = {
-  videoItems: Array<{
-    videoId: string;
-    title: string;
-    videoTimeLength: string;
-    thumbnailUrl: string;
-  }>;
+  videoItems: PlaylistItemType[];
   currentPlaying: {
     videoId: string;
     videoUrl: string;
@@ -100,12 +90,7 @@ export default ({
   currentPlaying,
 }: {
   children: React.ReactElement;
-  videoItems: Array<{
-    videoId: string;
-    title: string;
-    videoTimeLength: string;
-    thumbnailUrl: string;
-  }>;
+  videoItems: PlaylistItemType[];
   currentPlaying: {
     videoId: string;
     videoUrl: string;
