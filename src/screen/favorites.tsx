@@ -10,7 +10,7 @@ import {
   Button,
 } from '@ui-kitten/components';
 import {StackNavigationProp} from '@react-navigation/stack';
-import useStorage, {PlaylistItemType} from '../utils/usestorage';
+import {PlaylistItemType, saveFavorites} from '../utils/usestorage';
 import {
   CurrentPlayingViewContext,
   Types,
@@ -46,7 +46,6 @@ export default ({navigation}: {navigation: FavoriteScreenNavigationProp}) => {
   const [favoriteVideos, setFavoritesVideos] = useState<PlaylistItemType[]>([]);
 
   const {favorites, dispatch: userDataDispatch} = useContext(UserDataContext);
-  const {saveFavorites} = useStorage();
 
   useEffect(() => {
     if (favorites.sort === 0) {

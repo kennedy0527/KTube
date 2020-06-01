@@ -5,11 +5,18 @@ import React, {
   useReducer,
   useMemo,
 } from 'react';
-import useStorage, {FavoritesType, PlaylistItemType} from '../utils/usestorage';
-import {act} from 'react-test-renderer';
+import {
+  FavoritesType,
+  PlaylistItemType,
+  PlaylistsStorage,
+  handlePlaylists,
+  getFavorites,
+  getPlaylists,
+} from '../utils/usestorage';
 
 export enum Types {
-  GET_FAVORITES = 'GET_FAVORITES',
+  SET_PLAYLISTS = 'SET_PLAYLISTS',
+  UPDATE_PLAYLIST = 'UPDATE_PLAYLIST',
   SET_FAVORITES = 'SET_FAVORITES',
   TOGGLE_VIDEO = 'TOGGLE_VIDEO',
 
@@ -25,6 +32,12 @@ type ActionPayload = {
   [Types.SET_SORT]: {
     sort: number;
   };
+  [Types.SET_PLAYLISTS]: {
+    playlists: PlaylistsStorage[];
+  };
+  [Types.UPDATE_PLAYLIST]: {
+    playlist: PlaylistsStorage;
+  };
 };
 type ActionMap<M extends {[index: string]: any}> = {
   [Key in keyof M]: M[Key] extends undefined
@@ -38,6 +51,7 @@ type ActionMap<M extends {[index: string]: any}> = {
 type UserDataAction = ActionMap<ActionPayload>[keyof ActionMap<ActionPayload>];
 type State = {
   favorites: FavoritesType;
+  playlists: PlaylistsStorage[];
 };
 const reducer = (prevState: State, action: UserDataAction) => {
   switch (action.type) {
@@ -49,6 +63,7 @@ const reducer = (prevState: State, action: UserDataAction) => {
     }
     case Types.TOGGLE_VIDEO: {
       const videos = prevState.favorites.videos;
+
       const itemExistIndex = videos.findIndex(
         (video) => video.videoId === action.video.videoId,
       );
@@ -74,6 +89,22 @@ const reducer = (prevState: State, action: UserDataAction) => {
         },
       };
     }
+    case Types.SET_PLAYLISTS: {
+      return {
+        ...prevState,
+        playlists: action.playlists,
+      };
+    }
+    case Types.UPDATE_PLAYLIST: {
+      const newPlaylists = handlePlaylists(
+        prevState.playlists,
+        action.playlist,
+      );
+      return {
+        ...prevState,
+        playlists: newPlaylists,
+      };
+    }
     default: {
       return {
         ...prevState,
@@ -83,6 +114,8 @@ const reducer = (prevState: State, action: UserDataAction) => {
 };
 type UserDataContextProps = {
   favorites: FavoritesType;
+
+  playlists: PlaylistsStorage[];
   dispatch: React.Dispatch<any>;
 };
 export const UserDataContext = createContext<UserDataContextProps>({
@@ -90,6 +123,7 @@ export const UserDataContext = createContext<UserDataContextProps>({
     videos: [],
     sort: 0,
   },
+  playlists: [],
   dispatch: () => null,
 });
 
@@ -98,15 +132,14 @@ const {Provider} = UserDataContext;
 export default ({children}: {children: React.ReactElement}) => {
   const [state, dispatch] = useReducer(reducer, {
     favorites: {videos: [], sort: 0},
+    playlists: [],
   });
-  const {getFavorites, saveFavorites} = useStorage();
 
   useEffect(() => {
     const bootstrapAsync = async () => {
       try {
         await getFavoritesFromStorage();
-        // const userSetting = await getFavorites();
-        // setSortData(userSetting.sort);
+        await getPlaylistsFromStorage();
       } catch (e) {
         console.error(e);
       }
@@ -124,13 +157,22 @@ export default ({children}: {children: React.ReactElement}) => {
       console.log(error);
     }
   };
-  // const setSort = (sort: number) => {
-  //   setSortData(sort);
-  //   // saveUserData({sort});
-  // };
+  const getPlaylistsFromStorage = async () => {
+    try {
+      const playlists = await getPlaylists();
+
+      if (playlists) {
+        dispatch({type: Types.SET_PLAYLISTS, playlists});
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const userDataContext = useMemo(
     () => ({
       favorites: state.favorites,
+      playlists: state.playlists,
       dispatch,
     }),
     [state],

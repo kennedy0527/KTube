@@ -14,7 +14,6 @@ import {
   View,
   RefreshControl,
   Alert,
-  TouchableOpacity,
 } from 'react-native';
 import {
   Layout,
@@ -32,10 +31,12 @@ import {format} from 'date-fns';
 import {hasNotch} from 'react-native-device-info';
 import CustomeTopNavigation from '../components/customtopnaviagtion';
 import useYoutube from '../utils/useyoutube';
-import useStorage, {
+import {
   PlaylistsStorage,
   PlaylistItemType,
   FavoritesType,
+  getPlaylists,
+  savePlaylist,
 } from '../utils/usestorage';
 import {shuffle} from '../utils/utils';
 import {
@@ -149,8 +150,6 @@ type VideosListProps = {
   >;
   analyzeVideoUrl: (resp: any, scriptUrl: string) => void;
   dispatch: React.Dispatch<any>;
-  // sort: number;
-  // setSort: (sort: number) => void;
   favorites: FavoritesType;
 };
 function propsAreEqual(prev: VideosListProps, next: VideosListProps) {
@@ -158,9 +157,6 @@ function propsAreEqual(prev: VideosListProps, next: VideosListProps) {
     return false;
   }
   if (prev.videoItems !== next.videoItems) {
-    return false;
-  }
-  if (prev.sort !== next.sort) {
     return false;
   }
   return true;
@@ -178,8 +174,6 @@ const VideosList = memo(
     onShufflePress,
     visible,
     dispatch,
-    // sort,
-    // setSort,
     favorites,
   }: VideosListProps) => {
     const usetheme = useTheme();
@@ -232,10 +226,6 @@ const VideosList = memo(
         />
       );
     };
-    // const onSortPress = () => {
-    //   console.log(sort);
-    //   setSort(sort === 0 ? 1 : 0);
-    // };
     return (
       <List
         style={{
@@ -309,24 +299,6 @@ const VideosList = memo(
                 {() => <Text category="s1">Shuffle</Text>}
               </Button>
             </Layout>
-            {/* <Layout style={styles.sortContainer}>
-              <TouchableOpacity onPress={onSortPress}>
-                <Layout style={styles.sortBtnInner}>
-                  {sort === 0 ? (
-                    <ArrowUpIcon
-                      style={styles.sortIcon}
-                      fill={usetheme['text-basic-color']}
-                    />
-                  ) : (
-                    <ArrowDownIcon
-                      style={styles.sortIcon}
-                      fill={usetheme['text-basic-color']}
-                    />
-                  )}
-                  <Text>Sort</Text>
-                </Layout>
-              </TouchableOpacity>
-            </Layout> */}
           </Layout>
         )}
         ListFooterComponent={() => (
@@ -354,7 +326,6 @@ export default ({route, navigation}: Props): React.ReactElement => {
     analyzeVideoUrl,
     analyzeVideoInfo,
   } = useYoutube();
-  const {getPlaylists, savePlaylist} = useStorage();
   const {playlistId, title, thumbnail, dateTime, favorites} = route.params;
   const [playlistTitle, setPlaylistTitle] = useState<string>(title);
   const [playlistDateTime, setPlaylistDateTime] = useState<Date | string>(
@@ -363,7 +334,7 @@ export default ({route, navigation}: Props): React.ReactElement => {
   const {visible, currentPlaying, dispatch} = useContext(
     CurrentPlayingViewContext,
   );
-  // const {sort, setSort} = useContext(UserSettingContext);
+
   const listRef = useRef<List>(null);
   useEffect(() => {
     setIsFetching(true);
@@ -378,11 +349,7 @@ export default ({route, navigation}: Props): React.ReactElement => {
         if (playlist.id === playlistId) {
           const {playlistItems, title, dateTime: pDateTime} = playlist;
           setVideoItems(playlistItems);
-          // if (sort === 0) {
-          //   setVideoItems(playlistItems);
-          // } else if (sort === 1) {
-          //   setVideoItems([...playlistItems].reverse());
-          // }
+
           setPlaylistTitle(title);
           setPlaylistDateTime(pDateTime || dateTime);
           setIsFetching(false);
@@ -400,7 +367,7 @@ export default ({route, navigation}: Props): React.ReactElement => {
     try {
       setIsFetching(true);
       const playlistItems = (await fetchPlaylistItems(playlistId)) || [];
-      // const {id, title, thumbnail} = targetPlaylist;
+
       const videos = [];
 
       for (const playlistItem of playlistItems) {
@@ -474,9 +441,7 @@ export default ({route, navigation}: Props): React.ReactElement => {
       console.log(error);
     }
   };
-  // useEffect(() => {
-  //   setVideoItems([...videoItems].reverse());
-  // }, [sort]);
+
   return (
     <>
       <SafeAreaView
@@ -504,8 +469,6 @@ export default ({route, navigation}: Props): React.ReactElement => {
             analyzeVideoUrl={analyzeVideoUrl}
             dispatch={dispatch}
             visible={visible}
-            // sort={sort}
-            // setSort={setSort}
             favorites={favorites}
           />
         </Layout>
@@ -518,9 +481,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    // alignItems: 'center',
   },
-
   videoThumbnail: {
     height: '100%',
     resizeMode: 'cover',
@@ -556,21 +517,6 @@ const styles = StyleSheet.create({
   listHeaderTexts: {
     marginHorizontal: 15,
   },
-  // sortContainer: {
-  //   justifyContent: 'center',
-  //   alignItems: 'flex-end',
-  //   marginHorizontal: 15,
-  // },
-  // sortBtnInner: {
-  //   flexDirection: 'row',
-  //   justifyContent: 'center',
-  //   alignItems: 'center',
-  // },
-  // sortIcon: {
-  //   width: 18,
-  //   height: 18,
-  //   marginRight: 5,
-  // },
   listHeaderBtns: {
     flexDirection: 'row',
     marginTop: 15,

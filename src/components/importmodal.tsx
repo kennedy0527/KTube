@@ -19,7 +19,7 @@ import {useNavigation} from '@react-navigation/native';
 
 import {CloseIcon} from '../components/icons';
 import useYoutube from '../utils/useyoutube';
-import useStorage from '../utils/usestorage';
+import {savePlaylist} from '../utils/usestorage';
 
 type Props = {
   visible: boolean;
@@ -46,7 +46,7 @@ export default ({
     fetchWebPage,
     analyzeVideoInfo,
   } = useYoutube();
-  const {savePlaylist} = useStorage();
+
   const styles = useStyleSheet(themedStyles);
   const onCloseModal = () => {
     onDismiss();

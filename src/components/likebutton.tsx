@@ -2,7 +2,7 @@ import React, {useState, useEffect, useContext} from 'react';
 import {StyleSheet, View, TouchableOpacity, ViewStyle} from 'react-native';
 import {useTheme} from '@ui-kitten/components';
 import {UserDataContext, Types} from '../context/userdata-context';
-import useStorage, {PlaylistItemType} from '../utils/usestorage';
+import {PlaylistItemType, saveToFavorites} from '../utils/usestorage';
 import HeartOutline from '../assets/heart-outline.svg';
 import HeartFill from '../assets/heart-fill.svg';
 
@@ -19,7 +19,7 @@ export default ({item, like, containerStyle, outlineFill}: Props) => {
     setLiked(like);
   }, [like]);
   const usetheme = useTheme();
-  const {saveToFavorites} = useStorage();
+
   const onPress = () => {
     setLiked(!liked);
     dispatch({type: Types.TOGGLE_VIDEO, video: item});

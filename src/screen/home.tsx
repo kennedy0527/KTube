@@ -20,10 +20,12 @@ import Modal from 'react-native-modal';
 import {CurrentPlayingViewContext} from '../context/currentplayingview-context';
 import {UserDataContext} from '../context/userdata-context';
 import CustomeTopNavigation from '../components/customtopnaviagtion';
-import useStorage, {
+import {
   PlaylistsStorage,
   PlaylistItemType,
   FavoritesType,
+  getPlaylists,
+  removePlaylist,
 } from '../utils/usestorage';
 import FavoritesList from '../components/favoriteslist';
 import {RootStackParamList} from '../navigation/navigation';
@@ -94,7 +96,7 @@ export default ({
   const [limitFavorite, setLimitFavorites] = useState<PlaylistItemType[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState<any>(false);
-  const {getPlaylists, removePlaylist, getFavorites} = useStorage();
+
   const {visible, dispatch} = useContext(CurrentPlayingViewContext);
   const {favorites} = useContext(UserDataContext);
   const styles = useStyleSheet(themedStyles);
