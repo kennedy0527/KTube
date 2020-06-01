@@ -163,7 +163,7 @@ export default () => {
         return {
           videoId,
           title,
-          videoTimeLength: videoInfo.videoDetails.lengthSeconds,
+          videoTimeLength: Number(videoInfo.videoDetails.lengthSeconds) | 0,
           thumbnails,
         };
       }
@@ -297,7 +297,7 @@ export default () => {
         return {
           videoId,
           title,
-          videoTimeLength: lengthSeconds,
+          videoTimeLength: Number(lengthSeconds) | 0,
           thumbnailUrl,
         };
       }
