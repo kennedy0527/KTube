@@ -17,12 +17,16 @@ import {
   Button,
 } from '@ui-kitten/components';
 import FastImage from 'react-native-fast-image';
-import Carousel, {ParallaxImage} from 'react-native-snap-carousel';
+import Modal from 'react-native-modal';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {useFocusEffect} from '@react-navigation/native';
 import {RootStackParamList} from '../navigation/navigation';
 import CustomeTopNavigation from '../components/customtopnaviagtion';
-import {getPlaylists, PlaylistsStorage} from '../utils/usestorage';
+import {
+  getPlaylists,
+  PlaylistsStorage,
+  removePlaylist,
+} from '../utils/usestorage';
 type PlaylistsScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
   'Playlists'
@@ -34,9 +38,9 @@ export default ({navigation}: {navigation: PlaylistsScreenNavigationProp}) => {
   const styles = useStyleSheet(themedStyles);
   const [playlists, setPlaylists] = useState<PlaylistsStorage[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<PlaylistsStorage | boolean>(
-    false,
-  );
+  const [selectedItem, setSelectedItem] = useState<
+    PlaylistsStorage | undefined
+  >();
   const goBack = () => {
     navigation.goBack();
   };
@@ -71,6 +75,15 @@ export default ({navigation}: {navigation: PlaylistsScreenNavigationProp}) => {
     setSelectedItem(selectedItem);
     setModalVisible(!modalVisible);
   };
+  const onCancel = () => {
+    setModalVisible(!modalVisible);
+  };
+  const onRemove = async (item: PlaylistsStorage) => {
+    await removePlaylist(item.id);
+    setSelectedItem(undefined);
+    setModalVisible(!modalVisible);
+    await onGetPlaylists();
+  };
   const renderPlaylistCard = ({
     item,
     index,
@@ -86,14 +99,11 @@ export default ({navigation}: {navigation: PlaylistsScreenNavigationProp}) => {
           onLongPress={() => onLongPress(item)}
           activeOpacity={0.8}>
           <Layout style={styles.item}>
-            {/* <Layout style={styles.imageContainer}> */}
             <FastImage
               source={{uri: item.thumbnail}}
-              // containerStyle={styles.imageContainer}
               resizeMode={'center'}
               style={styles.image}
             />
-            {/* </Layout> */}
 
             <Layout style={styles.playlistDescContiner}>
               <Text
@@ -115,27 +125,65 @@ export default ({navigation}: {navigation: PlaylistsScreenNavigationProp}) => {
       </>
     );
   };
+  const renderModalContent = () => {
+    if (selectedItem) {
+      return (
+        <>
+          <Layout style={{alignItems: 'center', marginTop: 12}}>
+            <Text category="h5">{selectedItem.title}</Text>
+            <Text
+              style={{marginTop: 10}}
+              appearance="hint">{`include ${selectedItem.playlistItems.length} videos`}</Text>
+          </Layout>
+
+          <Layout style={styles.btnGroup}>
+            <Button appearance="ghost" onPress={onCancel}>
+              Cancel
+            </Button>
+            <Button
+              appearance="ghost"
+              status="danger"
+              onPress={() => onRemove(selectedItem)}>
+              Remove
+            </Button>
+          </Layout>
+        </>
+      );
+    }
+    return null;
+  };
   return (
-    <SafeAreaView style={styles.wrapper}>
-      <CustomeTopNavigation
-        customLeft={CustomBackAction}
-        title="Home"
-        alignment="start"
-      />
-      <Layout style={styles.playlistCardContainer}>
-        <FlatList
-          style={{flex: 1}}
-          numColumns={2}
-          data={playlists}
-          renderItem={renderPlaylistCard}
-          getItemLayout={(data: any, index: number) => ({
-            length: 200,
-            offset: 200 * index,
-            index,
-          })}
+    <>
+      <SafeAreaView style={styles.wrapper}>
+        <CustomeTopNavigation
+          customLeft={CustomBackAction}
+          title="Home"
+          alignment="start"
         />
-      </Layout>
-    </SafeAreaView>
+        <Layout style={styles.playlistCardContainer}>
+          <FlatList
+            style={{flex: 1}}
+            numColumns={2}
+            data={playlists}
+            renderItem={renderPlaylistCard}
+            getItemLayout={(data: any, index: number) => ({
+              length: 200,
+              offset: 200 * index,
+              index,
+            })}
+          />
+        </Layout>
+      </SafeAreaView>
+      <Modal
+        animationIn={'fadeIn'}
+        animationOut={'fadeOut'}
+        isVisible={modalVisible}
+        onBackdropPress={() => setModalVisible(!modalVisible)}
+        useNativeDriver
+        hideModalContentWhileAnimating>
+        <Layout style={styles.modalView}>{renderModalContent()}</Layout>
+      </Modal>
+    </>
   );
 };
 
@@ -147,24 +195,19 @@ const themedStyles = StyleService.create({
   },
   playlistCardContainer: {flex: 1, marginHorizontal: 18},
   item: {
-    // alignItems: 'center',
     width: (screenWidth - 36) / 2,
-
     flex: 1,
-
     paddingHorizontal: 10,
     paddingVertical: 10,
   },
   imageContainer: {
     flex: 1,
-    // marginBottom: Platform.select({ios: 0, android: 1}),
     backgroundColor: 'white',
     borderRadius: 8,
   },
   image: {
     width: '100%',
     height: (screenWidth - 36) / 2 - 20,
-    resizeMode: 'contain',
     borderRadius: 8,
   },
   playlistDescContiner: {
@@ -172,4 +215,16 @@ const themedStyles = StyleService.create({
     alignItems: 'flex-start',
   },
   playlistTitle: {},
+  modalView: {
+    margin: 20,
+    borderRadius: 10,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    justifyContent: 'center',
+  },
+  btnGroup: {
+    marginTop: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
 });
