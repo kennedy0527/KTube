@@ -18,6 +18,32 @@ export type FavoritesType = {
   videos: PlaylistItemType[];
   sort: number;
 };
+/**
+ * Handle Playlists data
+ * @param {PlaylistsStorage[]} oldPlaylists - old playlists data
+ * @param {PlaylistItemType} playlist - playlist to save to storage
+ * @returns new playlists
+ */
+export const handlePlaylists = (
+  oldPlaylists: PlaylistsStorage[],
+  playlist: PlaylistsStorage,
+) => {
+  const index = oldPlaylists.findIndex((op) => op.id === playlist.id);
+  const newPlaylists = [...oldPlaylists];
+  if (index === -1) {
+    newPlaylists.push({
+      ...playlist,
+      dateTime: new Date(),
+    });
+  } else {
+    newPlaylists.splice(index, 1);
+    newPlaylists.push({
+      ...playlist,
+      dateTime: new Date(),
+    });
+  }
+  return newPlaylists;
+};
 export default () => {
   const saveCurrentUserInfo = async (userInfo: any) => {
     try {
@@ -26,6 +52,15 @@ export default () => {
       console.log(error);
     }
   };
+  /**
+   * Save playlist to storage
+   * @param {PlaylistsStorage} playlist - Playlist
+   * @param {string} playlist.id - Playlist ID
+   * @param {string} playlist.title - Playlist title
+   * @param {string} playlist.thumbnail - Playlist thumbnail url
+   * @param {PlaylistItemType[]} playlist.playlistItems - Playlist videos
+   * @param {number} playlist.sort - Playlist sort (TODO:)
+   */
   const savePlaylist = async ({
     id,
     title,
@@ -37,39 +72,17 @@ export default () => {
       const importedPlaylist = await AsyncStorage.getItem('importedPlaylist');
       if (importedPlaylist) {
         const oldPlaylists: [PlaylistsStorage] = JSON.parse(importedPlaylist);
-        const index = oldPlaylists
-          .map((p: PlaylistsStorage) => p.id)
-          .indexOf(id);
-
-        if (index === -1) {
-          oldPlaylists.push({
-            id,
-            title,
-            thumbnail,
-            playlistItems,
-            dateTime: new Date(),
-          });
-          await AsyncStorage.setItem(
-            'importedPlaylist',
-            JSON.stringify(oldPlaylists),
-          );
-          console.log('Saved!!');
-        } else {
-          oldPlaylists.splice(index, 1);
-          oldPlaylists.push({
-            id,
-            title,
-            thumbnail,
-            playlistItems,
-            sort,
-            dateTime: new Date(),
-          });
-          await AsyncStorage.setItem(
-            'importedPlaylist',
-            JSON.stringify(oldPlaylists),
-          );
-          console.log('Updated!!');
-        }
+        const newPlaylists = handlePlaylists(oldPlaylists, {
+          id,
+          title,
+          thumbnail,
+          playlistItems,
+          sort,
+        });
+        await AsyncStorage.setItem(
+          'importedPlaylist',
+          JSON.stringify(newPlaylists),
+        );
       } else {
         const newPlaylists = [
           {
@@ -91,6 +104,7 @@ export default () => {
       console.log(error);
     }
   };
+
   const getPlaylists = async () => {
     try {
       const importedPlaylist = await AsyncStorage.getItem('importedPlaylist');
@@ -207,7 +221,10 @@ export default () => {
         }
         await AsyncStorage.setItem(
           'favorites',
-          JSON.stringify({videos: oldVideos, sort: oldFavorites.sort}),
+          JSON.stringify({
+            videos: oldVideos,
+            sort: oldFavorites.sort,
+          }),
         );
       } else {
         await AsyncStorage.setItem(
@@ -222,6 +239,7 @@ export default () => {
   return {
     saveCurrentUserInfo,
     getPlaylists,
+
     savePlaylist,
     removePlaylist,
     getTheme,
