@@ -59,25 +59,41 @@ export default ({
   const onImportPlaylists = async () => {
     try {
       setImportaing(true);
-
+      const getVideoIndo = async (videoId: string) => {
+        try {
+          const {playerResp} = await fetchWebPage(videoId);
+          const videoInfo = analyzeVideoInfo(playerResp);
+          if (videoInfo) {
+            return videoInfo;
+          }
+          return undefined;
+        } catch (error) {
+          console.log(error);
+          return undefined;
+        }
+      };
       for (const playlistId of selectedPlaylists) {
         const playlistItems = (await fetchPlaylistItems(playlistId)) || [];
         const {
           id,
           snippet: {title, thumbnails},
         } = playlists.filter((playlist) => playlist.id === playlistId)[0];
-        const videos = [];
-        for (const playlistItem of playlistItems) {
-          const {
-            contentDetails: {videoId},
-          } = playlistItem;
-          const {playerResp} = await fetchWebPage(videoId);
-          const videoInfo = analyzeVideoInfo(playerResp);
-          if (videoInfo) {
-            videos.push(videoInfo);
-          }
-        }
-
+        // const videos = [];
+        // for (const playlistItem of playlistItems) {
+        //   const {
+        //     contentDetails: {videoId},
+        //   } = playlistItem;
+        //   const {playerResp} = await fetchWebPage(videoId);
+        //   const videoInfo = analyzeVideoInfo(playerResp);
+        //   if (videoInfo) {
+        //     videos.push(videoInfo);
+        //   }
+        // }
+        const promises = playlistItems.map((playlistItem) =>
+          getVideoIndo(playlistItem.contentDetails.videoId),
+        );
+        const videosInfo = await Promise.all(promises);
+        const videos = videosInfo.filter((vi) => vi !== undefined);
         await savePlaylist({
           id,
           title,

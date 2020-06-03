@@ -297,7 +297,7 @@ export default ({route, navigation}: Props): React.ReactElement => {
 
   const listRef = useRef<List>(null);
   useEffect(() => {
-    setIsFetching(true);
+    // setIsFetching(true);
     getPlaylistsFromStorage();
   }, []);
 
@@ -328,24 +328,50 @@ export default ({route, navigation}: Props): React.ReactElement => {
       setIsFetching(true);
       const playlistItems = (await fetchPlaylistItems(playlistId)) || [];
 
-      const videos = [];
+      // const videos = [];
 
-      for (const playlistItem of playlistItems) {
-        const {
-          contentDetails: {videoId},
-        } = playlistItem;
-        const {playerResp} = await fetchWebPage(videoId);
-        const videoInfo = analyzeVideoInfo(playerResp);
-        if (videoInfo) {
-          videos.push(videoInfo);
+      // for (const playlistItem of playlistItems) {
+      //   const {
+      //     contentDetails: {videoId},
+      //   } = playlistItem;
+      //   const {playerResp} = await fetchWebPage(videoId);
+      //   const videoInfo = analyzeVideoInfo(playerResp);
+      //   if (videoInfo) {
+      //     videos.push(videoInfo);
+      //   }
+      // }
+
+      const getVideoIndo = async (videoId: string) => {
+        try {
+          const {playerResp} = await fetchWebPage(videoId);
+          const videoInfo = analyzeVideoInfo(playerResp);
+          if (videoInfo) {
+            return videoInfo;
+          }
+          return undefined;
+        } catch (error) {
+          console.log(error);
+          return undefined;
         }
+      };
+      // console.time();
+      const promises = playlistItems.map((playlistItem) =>
+        getVideoIndo(playlistItem.contentDetails.videoId),
+      );
+      const videosInfo = await Promise.all(promises);
+      const videos = videosInfo.filter((vi) => vi !== undefined);
+      // console.log(videos.filter(Boolean));
+      // console.timeEnd();
+      setIsFetching(false);
+      if (videos) {
+        await savePlaylist({
+          id: playlistId,
+          title,
+          thumbnail,
+          playlistItems: videos,
+        });
       }
-      await savePlaylist({
-        id: playlistId,
-        title,
-        thumbnail,
-        playlistItems: videos,
-      });
+
       await getPlaylistsFromStorage();
     } catch (error) {
       setIsFetching(false);
