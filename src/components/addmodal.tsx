@@ -101,12 +101,14 @@ export default ({
         onCloseModal();
         setUserMenuVisible(false);
       } else {
+        setImportaing(false);
         Alert.alert(
           "Couldn't Get Playlist Information",
           'make sure your youtube playlist url is correct',
         );
       }
     } catch (error) {
+      setImportaing(false);
       console.log(error);
       Alert.alert(
         "Couldn't Get Playlist Information",
