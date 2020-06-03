@@ -65,8 +65,13 @@ export default ({
   const getPlaylistsFromStorage = async () => {
     try {
       const storagePlaylists = await getPlaylists();
-
-      setPlaylists([...storagePlaylists.reverse().slice(0, 3), {type: 'more'}]);
+      const showPlaylists: (PlaylistsStorage | {type: 'more'})[] = [
+        ...storagePlaylists.reverse().slice(0, 3),
+      ];
+      if (showPlaylists.length > 3) {
+        showPlaylists.push({type: 'more'});
+      }
+      setPlaylists(showPlaylists);
     } catch (error) {
       console.log(error);
     }
