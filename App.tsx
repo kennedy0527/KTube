@@ -21,19 +21,10 @@ import ThemeContextProvider from './src/context/theme-context';
 import UserDataContextProvider from './src/context/userdata-context';
 import CurrentplayingViewProvider from './src/context/currentplayingview-context';
 export default (): React.ReactFragment => {
-  // const {getUserSetting, saveUserSetting} = useStorage();
-
-  // const [userSetting, setUserSetting] = useState({
-  //   theme: 'light',
-  //   sort: 0,
-  // });
   useEffect(() => {
     SplashScreen.hide();
   }, []);
-  // const setSort = (sort: number) => {
-  //   setUserSetting({...userSetting, sort});
-  //   saveUserSetting({...userSetting, sort});
-  // };
+
   return (
     <>
       <IconRegistry icons={[EvaIconsPack, SimpleLineIconsPack]} />
