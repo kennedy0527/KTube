@@ -51,6 +51,7 @@ export default () => {
 
       if (data.error) {
         errorTimes += 1;
+        console.log(data.error);
         if (errorTimes >= 5) {
           throw new Error(data.error.errors);
         }
