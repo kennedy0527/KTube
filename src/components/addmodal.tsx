@@ -25,7 +25,7 @@ import {ClearIcon} from './icons';
 type Props = {
   visible: boolean;
   onDismiss: () => void;
-  setUserMenuVisible: Dispatch<SetStateAction<boolean>>;
+  setUserMenuVisible?: Dispatch<SetStateAction<boolean>>;
   refreshPlaylist?: () => void;
 };
 export default ({
@@ -99,7 +99,7 @@ export default ({
         refreshPlaylist && refreshPlaylist();
 
         onCloseModal();
-        setUserMenuVisible(false);
+        setUserMenuVisible && setUserMenuVisible(false);
       } else {
         setImportaing(false);
         Alert.alert(
@@ -166,6 +166,8 @@ export default ({
       </TouchableWithoutFeedback>
       <Modal
         isVisible={importing}
+        animationIn={'fadeIn'}
+        animationOut={'fadeOut'}
         style={styles.spinnerModal}
         useNativeDriver
         hideModalContentWhileAnimating>

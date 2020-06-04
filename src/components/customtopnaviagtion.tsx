@@ -12,7 +12,6 @@ import {AuthContext} from '../context/auth-context';
 import {LightIcon, DarkIcon, SignOutIcon, DownloadIcon} from './icons';
 
 import ImportModal from '../components/importmodal';
-import AddModal from '../components/addmodal';
 import useYoutube from '../utils/useyoutube';
 interface Props {
   customLeft?: () => React.ReactElement;
@@ -33,7 +32,6 @@ export default ({
   const {currentUser, signIn, signOut} = useContext(AuthContext);
   const {theme, toggleTheme} = useContext(ThemeContext);
   const [importModalVisible, setImportModalVisible] = useState(false);
-  const [addModalVisible, setAddModalVisible] = useState(false);
   const [userMenuVisible, setUserMenuVisible] = useState(false);
 
   // const {
@@ -43,12 +41,6 @@ export default ({
   //   analyzeVideoUrl,
   // } = useYoutube();
 
-  // const ToogleThemeAction = (): React.ReactElement =>
-  //   theme === 'light' ? (
-  //     <TopNavigationAction icon={DarkIcon} onPress={toggleTheme} />
-  //   ) : (
-  //     <TopNavigationAction icon={LightIcon} onPress={toggleTheme} />
-  //   );
   const ToogleThemeAction = () => {
     return (
       <MenuItem
@@ -90,13 +82,6 @@ export default ({
               setImportModalVisible(true);
             }}
           />
-          <MenuItem
-            accessoryLeft={DownloadIcon}
-            title="Add Playlists"
-            onPress={() => {
-              setAddModalVisible(true);
-            }}
-          />
           {ToogleThemeAction()}
           {/* <MenuItem
             accessoryLeft={DownloadIcon}
@@ -127,9 +112,6 @@ export default ({
   const onImportModalDismiss = () => {
     setImportModalVisible(false);
   };
-  const onAddModalDismiss = () => {
-    setAddModalVisible(false);
-  };
   if (mode === 'onlyavatar') {
     return (
       <>
@@ -137,12 +119,6 @@ export default ({
         <ImportModal
           visible={importModalVisible}
           onDismiss={onImportModalDismiss}
-          setUserMenuVisible={setUserMenuVisible}
-          refreshPlaylist={refreshPlaylist}
-        />
-        <AddModal
-          visible={addModalVisible}
-          onDismiss={onAddModalDismiss}
           setUserMenuVisible={setUserMenuVisible}
           refreshPlaylist={refreshPlaylist}
         />
@@ -157,16 +133,9 @@ export default ({
         accessoryLeft={customLeft ? customLeft : ToogleThemeAction}
         accessoryRight={UserMenus}
       />
-      {/* <Divider /> */}
       <ImportModal
         visible={importModalVisible}
         onDismiss={onImportModalDismiss}
-        setUserMenuVisible={setUserMenuVisible}
-        refreshPlaylist={refreshPlaylist}
-      />
-      <AddModal
-        visible={addModalVisible}
-        onDismiss={onAddModalDismiss}
         setUserMenuVisible={setUserMenuVisible}
         refreshPlaylist={refreshPlaylist}
       />
