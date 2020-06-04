@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   Dimensions,
   Platform,
+  Appearance,
 } from 'react-native';
 import {
   Layout,
@@ -190,16 +191,27 @@ export default ({
             </Layout>
           </Layout>
           <Layout style={styles.playlistCardContainer}>
-            <Carousel
-              sliderWidth={screenWidth}
-              sliderHeight={200}
-              itemWidth={screenWidth - 60}
-              itemHeight={200}
-              inactiveSlideScale={1}
-              data={playlists}
-              renderItem={renderPlaylistCard}
-              hasParallaxImages
-            />
+            {playlists.length > 0 ? (
+              <Carousel
+                sliderWidth={screenWidth}
+                sliderHeight={200}
+                itemWidth={screenWidth - 60}
+                itemHeight={200}
+                inactiveSlideScale={1}
+                data={playlists}
+                renderItem={renderPlaylistCard}
+                hasParallaxImages
+              />
+            ) : (
+              <Layout style={styles.emptyContainer}>
+                <Text category={'h6'} appearance={'hint'}>
+                  Playlists are empty.
+                </Text>
+                <Text category={'s2'} appearance={'hint'}>
+                  Please import Playlist from user menu.
+                </Text>
+              </Layout>
+            )}
           </Layout>
 
           <Layout style={styles.header}>
@@ -318,5 +330,15 @@ const themedStyles = StyleService.create({
     marginTop: 20,
     flexDirection: 'row',
     justifyContent: 'space-around',
+  },
+  emptyContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: screenWidth - 60,
+    height: 200,
+    alignSelf: 'center',
+    paddingHorizontal: 10,
+    backgroundColor: 'background-empty-color',
+    borderRadius: 8,
   },
 });
