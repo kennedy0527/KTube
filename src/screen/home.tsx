@@ -218,13 +218,15 @@ export default ({
             <Layout style={styles.headerTitle}>
               <Text category="h4">Favorites</Text>
             </Layout>
-            <Layout style={styles.moreContainer}>
-              <TouchableOpacity onPress={onMorePress}>
-                <Layout>
-                  <Text category={'s1'}>More</Text>
-                </Layout>
-              </TouchableOpacity>
-            </Layout>
+            {limitFavorite.length > 0 ? (
+              <Layout style={styles.moreContainer}>
+                <TouchableOpacity onPress={onMorePress}>
+                  <Layout>
+                    <Text category={'s1'}>More</Text>
+                  </Layout>
+                </TouchableOpacity>
+              </Layout>
+            ) : null}
           </Layout>
           <FavoritesList
             favorites={limitFavorite}
