@@ -107,6 +107,7 @@ export default ({
       onDismiss();
       setUserMenuVisible(false);
     } catch (error) {
+      setImportaing(false);
       console.log(error);
     }
   };
