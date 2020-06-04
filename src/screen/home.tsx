@@ -69,7 +69,7 @@ export default ({
       const showPlaylists: (PlaylistsStorage | {type: 'more'})[] = [
         ...storagePlaylists.reverse().slice(0, 3),
       ];
-      if (showPlaylists.length > 3) {
+      if (storagePlaylists.length >= 3) {
         showPlaylists.push({type: 'more'});
       }
       setPlaylists(showPlaylists);
@@ -151,7 +151,6 @@ export default ({
         </TouchableOpacity>
       );
     }
-
     return (
       <TouchableOpacity
         key={item.id}
@@ -160,7 +159,9 @@ export default ({
         activeOpacity={0.8}>
         <Layout style={styles.item}>
           <ParallaxImage
-            source={{uri: item.thumbnail}}
+            source={{
+              uri: item.thumbnail,
+            }}
             containerStyle={styles.imageContainer}
             style={styles.image}
             parallaxFactor={0.4}
@@ -308,7 +309,8 @@ const themedStyles = StyleService.create({
     borderRadius: 8,
   },
   image: {
-    ...StyleSheet.absoluteFillObject,
+    // ...StyleSheet.absoluteFillObject,
+    aspectRatio: 1.8,
     resizeMode: 'cover',
   },
   container: {
