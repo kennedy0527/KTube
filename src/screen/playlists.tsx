@@ -99,11 +99,13 @@ export default ({navigation}: {navigation: PlaylistsScreenNavigationProp}) => {
           onLongPress={() => onLongPress(item)}
           activeOpacity={0.8}>
           <Layout style={styles.item}>
-            <FastImage
-              source={{uri: item.thumbnail}}
-              resizeMode={'center'}
-              style={styles.image}
-            />
+            <Layout style={styles.imageContainer}>
+              <FastImage
+                source={{uri: item.thumbnail}}
+                resizeMode={'cover'}
+                style={styles.image}
+              />
+            </Layout>
 
             <Layout style={styles.playlistDescContiner}>
               <Text
@@ -167,8 +169,8 @@ export default ({navigation}: {navigation: PlaylistsScreenNavigationProp}) => {
             data={playlists}
             renderItem={renderPlaylistCard}
             getItemLayout={(data: any, index: number) => ({
-              length: 200,
-              offset: 200 * index,
+              length: (screenWidth - 36) / 2 + 35,
+              offset: (screenWidth - 36) / 2 + 35 * index,
               index,
             })}
           />
@@ -196,19 +198,20 @@ const themedStyles = StyleService.create({
   playlistCardContainer: {flex: 1, marginHorizontal: 18},
   item: {
     width: (screenWidth - 36) / 2,
-    flex: 1,
+    height: (screenWidth - 36) / 2 + 35,
+    // flex: 1,
     paddingHorizontal: 10,
     paddingVertical: 10,
   },
   imageContainer: {
-    flex: 1,
-    backgroundColor: 'white',
-    borderRadius: 8,
-  },
-  image: {
     width: '100%',
     height: (screenWidth - 36) / 2 - 20,
+    backgroundColor: 'white',
     borderRadius: 8,
+    overflow: 'hidden',
+  },
+  image: {
+    flex: 1,
   },
   playlistDescContiner: {
     marginTop: 5,
