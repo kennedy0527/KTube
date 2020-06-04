@@ -208,7 +208,7 @@ export default ({
                   Playlists are empty.
                 </Text>
                 <Text category={'s2'} appearance={'hint'}>
-                  Please import Playlist from user menu.
+                  Please import playlist from user menu.
                 </Text>
               </Layout>
             )}
