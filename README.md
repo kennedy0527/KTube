@@ -22,10 +22,24 @@ then feel free to test it !
 
 # Functionality
 
+- Google Sign In
 - Youtube Backgorund Music
 - Dark Mode
-- import playlist from youtube by Youtube API and Playlist URL
-- save your favorite video anytime
+- Automatically change app icon by theme (light & dark)
+- Import playlist from youtube by Youtube API and Playlist URL
+- Save your favorite video anytime (favorites list)
+
+# TODO
+
+- sort favorites list to any position you want, not only reverse it
+- performance improve, especially `Flatlist`
+- Maybe fully abandon to use Youtube Data API because it's useless..., need to find a way to get playlist data
+
+# Found Issue
+
+- App in background (video stop) for long time, can not be able to restart video from the control center.
+
+if you found any issue please let me know, thanks
 
 # Why
 
@@ -33,4 +47,8 @@ This is my personal side project for improve my React and React Native skill.
 
 also I'm a music lover, so I made this app for myself to listen Youtube music video more convenient and also ad free !!
 
-some code is pretty ugly I know, so feel free to give some advice to me :D
+some code is pretty ugly I know, so feel free to give some advices to me :D
+
+# Credits
+
+Youtube URL extraction algorithms are inspired by [youtube-dl Project]('https://github.com/ytdl-org/youtube-dl)
