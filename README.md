@@ -8,7 +8,7 @@ Youtube Background Music App
 
 git clone this repo
 
-go to [Google Colud Platform](https://cloud.google.com) to create your project with `YouTube Data API v3`
+go to [Google Cloud Platform](https://cloud.google.com) to create your project with `YouTube Data API v3`
 
 then create `OAuth 2.0 credential` with type `iOS`
 
