@@ -151,6 +151,12 @@ function propsAreEqual(prev: VideosListProps, next: VideosListProps) {
   if (prev.videoItems !== next.videoItems) {
     return false;
   }
+  if (prev.playlistDateTime !== next.playlistDateTime) {
+    return false;
+  }
+  if (prev.playlistTitle !== next.playlistTitle) {
+    return false;
+  }
   return true;
 }
 
@@ -354,7 +360,14 @@ export default ({route, navigation}: Props): React.ReactElement => {
         getVideoIndo(playlistItem.contentDetails.videoId),
       );
       const videosInfo = await Promise.all(promises);
-      const videos = videosInfo.filter((vi) => vi !== undefined);
+
+      const notUndefined = (
+        value: PlaylistItemType | undefined,
+      ): value is PlaylistItemType => {
+        return value !== undefined;
+      };
+
+      const videos = videosInfo.filter(notUndefined);
       // console.log(videos.filter(Boolean));
       // console.timeEnd();
       setIsFetching(false);

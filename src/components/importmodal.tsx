@@ -20,7 +20,7 @@ import AddModal from '../components/addmodal';
 
 import {CloseIcon} from '../components/icons';
 import useYoutube from '../utils/useyoutube';
-import {savePlaylist} from '../utils/usestorage';
+import {savePlaylist, PlaylistItemType} from '../utils/usestorage';
 
 type Props = {
   visible: boolean;
@@ -81,22 +81,17 @@ export default ({
           snippet: {title, thumbnails},
         } = playlists.filter((playlist) => playlist.id === playlistId)[0];
 
-        // const videos = [];
-        // for (const playlistItem of playlistItems) {
-        //   const {
-        //     contentDetails: {videoId},
-        //   } = playlistItem;
-        //   const {playerResp} = await fetchWebPage(videoId);
-        //   const videoInfo = analyzeVideoInfo(playerResp);
-        //   if (videoInfo) {
-        //     videos.push(videoInfo);
-        //   }
-        // }
         const promises = playlistItems.map((playlistItem) =>
           getVideoIndo(playlistItem.contentDetails.videoId),
         );
         const videosInfo = await Promise.all(promises);
-        const videos = videosInfo.filter((vi) => vi !== undefined);
+
+        const notUndefined = (
+          value: PlaylistItemType | undefined,
+        ): value is PlaylistItemType => {
+          return value !== undefined;
+        };
+        const videos = videosInfo.filter(notUndefined);
         const thumbnail = thumbnails.standard
           ? thumbnails.standard.url
           : thumbnails.high.url;
@@ -230,7 +225,6 @@ export default ({
             <AddModal
               visible={addModalVisible}
               onDismiss={onAddModalDismiss}
-              // setUserMenuVisible={setUserMenuVisible}
               refreshPlaylist={refreshPlaylist}
             />
           </Layout>
