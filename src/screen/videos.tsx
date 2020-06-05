@@ -8,13 +8,7 @@ import React, {
   useMemo,
   useCallback,
 } from 'react';
-import {
-  StyleSheet,
-  SafeAreaView,
-  View,
-  RefreshControl,
-  Alert,
-} from 'react-native';
+import {SafeAreaView, View, RefreshControl, Alert} from 'react-native';
 import {
   Layout,
   Text,
@@ -23,6 +17,8 @@ import {
   ListItem,
   TopNavigationAction,
   Button,
+  StyleService,
+  useStyleSheet,
 } from '@ui-kitten/components';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
@@ -82,6 +78,7 @@ const VideoRow = ({
   onPress,
   like,
 }: VideoRowProps) => {
+  const styles = useStyleSheet(themedStyles);
   // console.log('rows');
   // useTraceUpdate({thumbnailUrl, title, videoId, videoTimeLength, onPress});
   return useMemo(
@@ -102,7 +99,7 @@ const VideoRow = ({
               }}
             />
             <View style={styles.videoLength}>
-              <Text style={{color: 'white'}}>
+              <Text category={'s2'} style={styles.videoLengthText}>
                 {formatTime(videoTimeLength)}
               </Text>
             </View>
@@ -165,6 +162,7 @@ const VideosList = memo(
     favorites,
   }: VideosListProps) => {
     const usetheme = useTheme();
+    const styles = useStyleSheet(themedStyles);
     const onPress = useCallback(
       async (videoId: string) => {
         try {
@@ -216,10 +214,7 @@ const VideosList = memo(
     };
     return (
       <List
-        style={{
-          flex: 1,
-          backgroundColor: usetheme['background-basic-color-1'],
-        }}
+        style={styles.list}
         keyExtractor={(item) => item.videoId}
         ref={listRef}
         data={videoItems}
@@ -235,7 +230,10 @@ const VideosList = memo(
           <Layout style={styles.listHeader}>
             <Layout style={styles.listHeaderTexts}>
               <Text category="h2">{playlistTitle}</Text>
-              <Text category="s2" style={{marginTop: 5, color: 'lightgray'}}>
+              <Text
+                category="s2"
+                appearance="hint"
+                style={styles.listHeaderDescText}>
                 Updated at{' '}
                 {format(new Date(playlistDateTime), 'yyyy-MM-dd HH:mm:ss')}
               </Text>
@@ -243,46 +241,20 @@ const VideosList = memo(
 
             <Layout style={styles.listHeaderBtns}>
               <Button
-                style={{
-                  flex: 1,
-                  margin: 10,
-                  backgroundColor: usetheme['color-basic-default'],
-                  borderColor: usetheme['color-basic-default'],
-                }}
+                style={styles.controlBtns}
                 activeOpacity={0.5}
                 status="primary"
                 onPress={onPlayPress}
-                accessoryLeft={(ImageProps?: Partial<{style: any}>) => (
-                  <PlayIcon
-                    style={{
-                      ...ImageProps?.style,
-                      color: usetheme['text-basic-color'],
-                      height: 14,
-                      width: 14,
-                    }}
-                  />
-                )}>
+                accessoryLeft={() => <PlayIcon style={styles.controlIcon} />}>
                 {() => <Text category="s1">Play</Text>}
               </Button>
               <Button
-                style={{
-                  flex: 1,
-                  margin: 10,
-                  backgroundColor: usetheme['color-basic-default'],
-                  borderColor: usetheme['color-basic-default'],
-                }}
+                style={styles.controlBtns}
                 activeOpacity={0.5}
                 status="primary"
                 onPress={onShufflePress}
-                accessoryLeft={(ImageProps?: Partial<{style: any}>) => (
-                  <ShuffleIcon
-                    style={{
-                      ...ImageProps?.style,
-                      color: usetheme['text-basic-color'],
-                      height: 14,
-                      width: 14,
-                    }}
-                  />
+                accessoryLeft={() => (
+                  <ShuffleIcon style={styles.controlIcon} />
                 )}>
                 {() => <Text category="s1">Shuffle</Text>}
               </Button>
@@ -304,8 +276,7 @@ const VideosList = memo(
   propsAreEqual,
 );
 export default ({route, navigation}: Props): React.ReactElement => {
-  const usetheme = useTheme();
-
+  const styles = useStyleSheet(themedStyles);
   const [videoItems, setVideoItems] = useState<PlaylistItemType[]>([]);
   const [isFetching, setIsFetching] = useState(false);
   const {
@@ -326,7 +297,7 @@ export default ({route, navigation}: Props): React.ReactElement => {
 
   const listRef = useRef<List>(null);
   useEffect(() => {
-    setIsFetching(true);
+    // setIsFetching(true);
     getPlaylistsFromStorage();
   }, []);
 
@@ -357,24 +328,50 @@ export default ({route, navigation}: Props): React.ReactElement => {
       setIsFetching(true);
       const playlistItems = (await fetchPlaylistItems(playlistId)) || [];
 
-      const videos = [];
+      // const videos = [];
 
-      for (const playlistItem of playlistItems) {
-        const {
-          contentDetails: {videoId},
-        } = playlistItem;
-        const {playerResp} = await fetchWebPage(videoId);
-        const videoInfo = analyzeVideoInfo(playerResp);
-        if (videoInfo) {
-          videos.push(videoInfo);
+      // for (const playlistItem of playlistItems) {
+      //   const {
+      //     contentDetails: {videoId},
+      //   } = playlistItem;
+      //   const {playerResp} = await fetchWebPage(videoId);
+      //   const videoInfo = analyzeVideoInfo(playerResp);
+      //   if (videoInfo) {
+      //     videos.push(videoInfo);
+      //   }
+      // }
+
+      const getVideoIndo = async (videoId: string) => {
+        try {
+          const {playerResp} = await fetchWebPage(videoId);
+          const videoInfo = analyzeVideoInfo(playerResp);
+          if (videoInfo) {
+            return videoInfo;
+          }
+          return undefined;
+        } catch (error) {
+          console.log(error);
+          return undefined;
         }
+      };
+      // console.time();
+      const promises = playlistItems.map((playlistItem) =>
+        getVideoIndo(playlistItem.contentDetails.videoId),
+      );
+      const videosInfo = await Promise.all(promises);
+      const videos = videosInfo.filter((vi) => vi !== undefined);
+      // console.log(videos.filter(Boolean));
+      // console.timeEnd();
+      setIsFetching(false);
+      if (videos) {
+        await savePlaylist({
+          id: playlistId,
+          title,
+          thumbnail,
+          playlistItems: videos,
+        });
       }
-      await savePlaylist({
-        id: playlistId,
-        title,
-        thumbnail,
-        playlistItems: videos,
-      });
+
       await getPlaylistsFromStorage();
     } catch (error) {
       setIsFetching(false);
@@ -433,12 +430,7 @@ export default ({route, navigation}: Props): React.ReactElement => {
 
   return (
     <>
-      <SafeAreaView
-        style={{
-          position: 'relative',
-          flex: 1,
-          backgroundColor: usetheme['background-basic-color-1'],
-        }}>
+      <SafeAreaView style={styles.wrapper}>
         <Layout style={styles.container}>
           <CustomeTopNavigation
             customLeft={CustomBackAction}
@@ -466,7 +458,12 @@ export default ({route, navigation}: Props): React.ReactElement => {
   );
 };
 
-const styles = StyleSheet.create({
+const themedStyles = StyleService.create({
+  wrapper: {
+    position: 'relative',
+    flex: 1,
+    backgroundColor: 'background-basic-color-1',
+  },
   container: {
     flex: 1,
     justifyContent: 'center',
@@ -501,11 +498,19 @@ const styles = StyleSheet.create({
     padding: 2,
     borderRadius: 5,
   },
+  videoLengthText: {color: 'white'},
+  list: {
+    flex: 1,
+    backgroundColor: 'background-basic-color-1',
+  },
   listHeader: {
     marginTop: 5,
   },
   listHeaderTexts: {
     marginHorizontal: 15,
+  },
+  listHeaderDescText: {
+    marginTop: 5,
   },
   listHeaderBtns: {
     flexDirection: 'row',
@@ -514,5 +519,17 @@ const styles = StyleSheet.create({
   listFooter: {
     alignItems: 'center',
     paddingVertical: 15,
+  },
+  controlBtns: {
+    flex: 1,
+    margin: 10,
+    backgroundColor: 'color-basic-default',
+    borderColor: 'color-basic-default',
+  },
+  controlIcon: {
+    color: 'text-basic-color',
+    height: 14,
+    width: 14,
+    marginHorizontal: 10,
   },
 });

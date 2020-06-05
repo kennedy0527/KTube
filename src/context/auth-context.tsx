@@ -108,9 +108,9 @@ type AuthContextProps = {
   isSignout: boolean;
   errMsg: string;
   errModal: boolean;
-  signIn: () => void;
-  signOut: () => void;
-  signInSilently: () => void;
+  signIn: () => Promise<void>;
+  signOut: () => Promise<void>;
+  signInSilently: () => Promise<void>;
   dispatch: React.Dispatch<any>;
 };
 export const AuthContext = createContext<AuthContextProps>({
@@ -119,9 +119,9 @@ export const AuthContext = createContext<AuthContextProps>({
   isSignout: true,
   errMsg: '',
   errModal: false,
-  signIn: () => null,
-  signOut: () => null,
-  signInSilently: () => null,
+  signIn: async () => {},
+  signOut: async () => {},
+  signInSilently: async () => {},
   dispatch: () => null,
 });
 const {Provider} = AuthContext;

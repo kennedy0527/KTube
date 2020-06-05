@@ -178,19 +178,22 @@ const VideoPlayer = (
   const onEnd = async () => {
     try {
       const {videoId: currentPlayingID} = currentPlaying;
-      let index = videoItems
-        .map((item) => item.videoId)
-        .indexOf(currentPlayingID);
+      let index = videoItems.findIndex(
+        (item) => item.videoId === currentPlayingID,
+      );
       if (index >= videoItems.length - 1) {
         index = 0;
       } else {
         index += 1;
       }
       const {videoId, thumbnailUrl, title} = videoItems[index];
-      console.log(thumbnailUrl);
+
       if (videoListRef.current && index !== -1) {
         videoListRef.current.scrollToIndex({index});
       }
+      hideCurrentAnim();
+      const target = getPlayingAnimRef(index);
+      target && target.show();
       currentPlayingViewContextDispatch({
         type: CurrentPlayingViewTypes.ChangeVideo,
         currentPlaying: {
@@ -200,6 +203,7 @@ const VideoPlayer = (
           title,
         },
       });
+      getVideoUrl(videoId);
     } catch (error) {
       console.log(error);
     }
@@ -394,7 +398,6 @@ const VideoPlayer = (
       const {videoId, thumbnailUrl, title} = videoItems[index];
 
       if (videoListRef.current && index !== -1) {
-        console.log('Index:', index);
         videoListRef.current.scrollToIndex({index});
       }
       hideCurrentAnim();
@@ -429,7 +432,6 @@ const VideoPlayer = (
       const {videoId, thumbnailUrl, title} = videoItems[index];
 
       if (videoListRef.current && index !== -1) {
-        console.log('Index:', index);
         videoListRef.current.scrollToIndex({index});
       }
       hideCurrentAnim();

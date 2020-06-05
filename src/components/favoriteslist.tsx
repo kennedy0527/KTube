@@ -114,6 +114,7 @@ export default (props: Props) => {
   return (
     <FlatList
       keyExtractor={keyExtractor}
+      contentContainerStyle={{flexGrow: 1}}
       style={styles.favoritesList}
       data={favorites}
       ItemSeparatorComponent={() => <Divider style={styles.divider} />}
@@ -126,6 +127,18 @@ export default (props: Props) => {
             visible ? {marginBottom: listFootMarginBottom} : {},
           ]}>
           {ListFooterComponent ? <ListFooterComponent /> : null}
+        </Layout>
+      )}
+      ListEmptyComponent={() => (
+        <Layout style={styles.emptyContainer}>
+          <Layout style={styles.emptyTextContainer}>
+            <Text category={'h6'} appearance="hint">
+              Favorites are empty.
+            </Text>
+            <Text category={'s2'} appearance="hint">
+              Please add videos from imported playlists.
+            </Text>
+          </Layout>
         </Layout>
       )}
     />
@@ -171,4 +184,14 @@ const themedStyles = StyleService.create({
     marginHorizontal: 10,
   },
   listFooter: {alignItems: 'center', padding: 15},
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyTextContainer: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+  },
 });

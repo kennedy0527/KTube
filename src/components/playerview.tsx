@@ -116,14 +116,17 @@ export default ({
             opacity: controlOpacityAnim,
           },
         ]}>
-        <TextTicker
-          style={{color: usetheme['text-basic-color']}}
-          duration={10000}
-          loop
-          bounce={false}
-          marqueeDelay={1000}>
-          {title}
-        </TextTicker>
+        <View style={styles.textTickerContainer}>
+          <TextTicker
+            style={{color: usetheme['text-basic-color']}}
+            isRTL={false}
+            duration={10000}
+            loop
+            bounce={false}
+            marqueeDelay={1000}>
+            {title}
+          </TextTicker>
+        </View>
       </Animated.View>
       <Animated.View
         style={[
@@ -191,4 +194,5 @@ const styles = StyleSheet.create({
     bottom: 0,
     opacity: 0,
   },
+  textTickerContainer: {width: '100%'},
 });

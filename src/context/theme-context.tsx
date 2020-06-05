@@ -11,7 +11,11 @@ interface ThemeProps {
   };
 }
 const themes: ThemeProps = {
-  light: {...eva.light, 'border-favorite-color': '#E4E9F2'},
+  light: {
+    ...eva.light,
+    'border-favorite-color': '#E4E9F2',
+    'background-empty-color': '#eee',
+  },
   dark: {
     ...eva.dark,
     'background-basic-color-1': '#132132',
@@ -19,6 +23,7 @@ const themes: ThemeProps = {
     'border-basic-color-4': '#1d334d',
     'border-favorite-color': '#434E5E',
     'color-basic-default': '#578ccc',
+    'background-empty-color': '#1d334d',
   },
 };
 type ThemeContextProps = {

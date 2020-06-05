@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   Dimensions,
   Platform,
+  Appearance,
 } from 'react-native';
 import {
   Layout,
@@ -65,8 +66,13 @@ export default ({
   const getPlaylistsFromStorage = async () => {
     try {
       const storagePlaylists = await getPlaylists();
-
-      setPlaylists([...storagePlaylists.reverse().slice(0, 3), {type: 'more'}]);
+      const showPlaylists: (PlaylistsStorage | {type: 'more'})[] = [
+        ...storagePlaylists.reverse().slice(0, 3),
+      ];
+      if (storagePlaylists.length >= 3) {
+        showPlaylists.push({type: 'more'});
+      }
+      setPlaylists(showPlaylists);
     } catch (error) {
       console.log(error);
     }
@@ -145,7 +151,6 @@ export default ({
         </TouchableOpacity>
       );
     }
-
     return (
       <TouchableOpacity
         key={item.id}
@@ -154,7 +159,9 @@ export default ({
         activeOpacity={0.8}>
         <Layout style={styles.item}>
           <ParallaxImage
-            source={{uri: item.thumbnail}}
+            source={{
+              uri: item.thumbnail,
+            }}
             containerStyle={styles.imageContainer}
             style={styles.image}
             parallaxFactor={0.4}
@@ -185,29 +192,42 @@ export default ({
             </Layout>
           </Layout>
           <Layout style={styles.playlistCardContainer}>
-            <Carousel
-              sliderWidth={screenWidth}
-              sliderHeight={200}
-              itemWidth={screenWidth - 60}
-              itemHeight={200}
-              inactiveSlideScale={1}
-              data={playlists}
-              renderItem={renderPlaylistCard}
-              hasParallaxImages
-            />
+            {playlists.length > 0 ? (
+              <Carousel
+                sliderWidth={screenWidth}
+                sliderHeight={200}
+                itemWidth={screenWidth - 60}
+                itemHeight={200}
+                inactiveSlideScale={1}
+                data={playlists}
+                renderItem={renderPlaylistCard}
+                hasParallaxImages
+              />
+            ) : (
+              <Layout style={styles.emptyContainer}>
+                <Text category={'h6'} appearance={'hint'}>
+                  Playlists are empty.
+                </Text>
+                <Text category={'s2'} appearance={'hint'}>
+                  Please import playlist from user menu.
+                </Text>
+              </Layout>
+            )}
           </Layout>
 
           <Layout style={styles.header}>
             <Layout style={styles.headerTitle}>
               <Text category="h4">Favorites</Text>
             </Layout>
-            <Layout style={styles.moreContainer}>
-              <TouchableOpacity onPress={onMorePress}>
-                <Layout>
-                  <Text category={'s1'}>More</Text>
-                </Layout>
-              </TouchableOpacity>
-            </Layout>
+            {limitFavorite.length > 0 ? (
+              <Layout style={styles.moreContainer}>
+                <TouchableOpacity onPress={onMorePress}>
+                  <Layout>
+                    <Text category={'s1'}>More</Text>
+                  </Layout>
+                </TouchableOpacity>
+              </Layout>
+            ) : null}
           </Layout>
           <FavoritesList
             favorites={limitFavorite}
@@ -289,7 +309,8 @@ const themedStyles = StyleService.create({
     borderRadius: 8,
   },
   image: {
-    ...StyleSheet.absoluteFillObject,
+    // ...StyleSheet.absoluteFillObject,
+    aspectRatio: 1.8,
     resizeMode: 'cover',
   },
   container: {
@@ -313,5 +334,15 @@ const themedStyles = StyleService.create({
     marginTop: 20,
     flexDirection: 'row',
     justifyContent: 'space-around',
+  },
+  emptyContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: screenWidth - 60,
+    height: 200,
+    alignSelf: 'center',
+    paddingHorizontal: 10,
+    backgroundColor: 'background-empty-color',
+    borderRadius: 8,
   },
 });

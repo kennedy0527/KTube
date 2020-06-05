@@ -25,7 +25,7 @@ import {ClearIcon} from './icons';
 type Props = {
   visible: boolean;
   onDismiss: () => void;
-  setUserMenuVisible: Dispatch<SetStateAction<boolean>>;
+  setUserMenuVisible?: Dispatch<SetStateAction<boolean>>;
   refreshPlaylist?: () => void;
 };
 export default ({
@@ -53,20 +53,38 @@ export default ({
   const onImportPlaylist = async (playlistID: string) => {
     try {
       setImportaing(true);
-      const playlist = await fetchSinglePlaylist(playlistID);
-      if (playlist && playlist.length != 0) {
-        const playlistItems = (await fetchPlaylistItems(playlistID)) || [];
-        const videos = [];
-        for (const playlistItem of playlistItems) {
-          const {
-            contentDetails: {videoId},
-          } = playlistItem;
+      const getVideoIndo = async (videoId: string) => {
+        try {
           const {playerResp} = await fetchWebPage(videoId);
           const videoInfo = analyzeVideoInfo(playerResp);
           if (videoInfo) {
-            videos.push(videoInfo);
+            return videoInfo;
           }
+          return undefined;
+        } catch (error) {
+          console.log(error);
+          return undefined;
         }
+      };
+      const playlist = await fetchSinglePlaylist(playlistID);
+      if (playlist && playlist.length != 0) {
+        const playlistItems = (await fetchPlaylistItems(playlistID)) || [];
+        // const videos = [];
+        // for (const playlistItem of playlistItems) {
+        //   const {
+        //     contentDetails: {videoId},
+        //   } = playlistItem;
+        //   const {playerResp} = await fetchWebPage(videoId);
+        //   const videoInfo = analyzeVideoInfo(playerResp);
+        //   if (videoInfo) {
+        //     videos.push(videoInfo);
+        //   }
+        // }
+        const promises = playlistItems.map((playlistItem) =>
+          getVideoIndo(playlistItem.contentDetails.videoId),
+        );
+        const videosInfo = await Promise.all(promises);
+        const videos = videosInfo.filter((vi) => vi !== undefined);
         const {
           id,
           snippet: {title, thumbnails},
@@ -81,14 +99,16 @@ export default ({
         refreshPlaylist && refreshPlaylist();
 
         onCloseModal();
-        setUserMenuVisible(false);
+        setUserMenuVisible && setUserMenuVisible(false);
       } else {
+        setImportaing(false);
         Alert.alert(
           "Couldn't Get Playlist Information",
           'make sure your youtube playlist url is correct',
         );
       }
     } catch (error) {
+      setImportaing(false);
       console.log(error);
       Alert.alert(
         "Couldn't Get Playlist Information",
@@ -146,6 +166,8 @@ export default ({
       </TouchableWithoutFeedback>
       <Modal
         isVisible={importing}
+        animationIn={'fadeIn'}
+        animationOut={'fadeOut'}
         style={styles.spinnerModal}
         useNativeDriver
         hideModalContentWhileAnimating>
