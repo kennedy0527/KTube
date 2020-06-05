@@ -128,7 +128,8 @@ export default ({
   return (
     <>
       <TopNavigation
-        title={title ? title : ''}
+        style={{paddingHorizontal: 10}}
+        // title={title ? title : ''}
         alignment={alignment || 'center'}
         accessoryLeft={customLeft ? customLeft : ToogleThemeAction}
         accessoryRight={UserMenus}

@@ -178,6 +178,7 @@ export default ({
       : thumbnails.high.url;
     return (
       <ListItem
+        style={styles.listItem}
         title={`${item.snippet.title}`}
         description={`Total ${item.contentDetails.itemCount} videos`}
         onPress={() => onSelectPlaylist(item.id)}
@@ -251,9 +252,11 @@ const themedStyles = StyleService.create({
     flex: 1,
     backgroundColor: 'background-basic-color-1',
   },
+  listItem: {
+    paddingHorizontal: 18,
+  },
   container: {
     flex: 1,
-    marginHorizontal: 10,
   },
   spinnerModal: {alignItems: 'center'},
   spinnerContainer: {

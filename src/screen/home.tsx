@@ -257,7 +257,7 @@ const themedStyles = StyleService.create({
   header: {
     flexDirection: 'row',
     marginVertical: 10,
-    marginHorizontal: 10,
+    marginHorizontal: 18,
     alignItems: 'center',
   },
   headerTitle: {
@@ -269,7 +269,6 @@ const themedStyles = StyleService.create({
   playlistCardContainer: {
     position: 'relative',
     height: 200,
-    marginHorizontal: -10,
     marginVertical: 10,
   },
   userMenu: {
@@ -315,7 +314,6 @@ const themedStyles = StyleService.create({
   },
   container: {
     flex: 1,
-    marginHorizontal: 10,
   },
   text: {
     textAlign: 'center',

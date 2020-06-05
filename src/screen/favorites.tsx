@@ -59,7 +59,12 @@ export default ({navigation}: {navigation: FavoriteScreenNavigationProp}) => {
     navigation.goBack();
   };
   const CustomBackAction = (): React.ReactElement => (
-    <TopNavigationAction icon={BackIcon} onPress={goBack} />
+    <TouchableOpacity onPress={goBack}>
+      <Layout style={styles.backActionContainer}>
+        <BackIcon style={styles.backIcon} fill={usetheme['text-basic-color']} />
+        <Text category={'s1'}>Home</Text>
+      </Layout>
+    </TouchableOpacity>
   );
   const onPlayPress = useCallback(async () => {
     try {
@@ -193,10 +198,19 @@ const themedStyles = StyleService.create({
   },
   container: {
     flex: 1,
-    marginHorizontal: 10,
+  },
+  backActionContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  backIcon: {
+    width: 22,
+    height: 22,
+    marginRight: 5,
   },
   listHeader: {
     marginTop: 5,
+    marginHorizontal: 8,
   },
   btn: {
     flex: 1,
@@ -211,7 +225,7 @@ const themedStyles = StyleService.create({
     marginHorizontal: 10,
   },
   listHeaderTexts: {
-    marginHorizontal: 15,
+    marginLeft: 10,
   },
   sortContainer: {
     justifyContent: 'center',
