@@ -1,4 +1,4 @@
-# ![Logo](KTubeImages/light/Icon-App-29x29@1x.png) KTube
+# <img src="KTubeImages/light/iTunesArtwork@1x.png" width="29" height="29"> KTube
 
 Youtube Background Music App
 
