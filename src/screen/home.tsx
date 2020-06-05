@@ -60,9 +60,9 @@ export default ({
   useEffect(() => {
     setLimitFavorites([...favorites.videos].reverse().slice(0, 20));
   }, [favorites]);
-  const onGetDatas = async () => {
+  const onGetDatas = useCallback(async () => {
     await getPlaylistsFromStorage();
-  };
+  }, []);
   const getPlaylistsFromStorage = async () => {
     try {
       const storagePlaylists = await getPlaylists();
