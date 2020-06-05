@@ -110,9 +110,22 @@ const VideoPlayer = (
   const seekCircleZoomAnim = useRef(new Animated.Value(10)).current;
   const seekCircleBottomAnim = useRef(new Animated.Value(2)).current;
   const timerRef = useRef(0);
+  /**
+   * getVideoUrl AbortContoller
+   */
   const gvuAbortControllerRef = useRef<AbortController | null>(null);
+  /**
+   * fetchWebPage AbortContoller
+   */
   const fwpAbortControllerRef = useRef<AbortController | null>(null);
+  /**
+   * analyzeVideoUrl AbortContoller
+   */
   const avuAbortControllerRef = useRef<AbortController | null>(null);
+  /**
+   * record getVideoUrl failed times
+   */
+  const getVideoUrlfailedTimes = useRef(0);
   /**
    * Seek Bar Pan Responder
    */
@@ -175,38 +188,8 @@ const VideoPlayer = (
     setSeekOffset(0);
     setCurrentTime('00:00');
   };
-  const onEnd = async () => {
-    try {
-      const {videoId: currentPlayingID} = currentPlaying;
-      let index = videoItems.findIndex(
-        (item) => item.videoId === currentPlayingID,
-      );
-      if (index >= videoItems.length - 1) {
-        index = 0;
-      } else {
-        index += 1;
-      }
-      const {videoId, thumbnailUrl, title} = videoItems[index];
-
-      if (videoListRef.current && index !== -1) {
-        videoListRef.current.scrollToIndex({index});
-      }
-      hideCurrentAnim();
-      const target = getPlayingAnimRef(index);
-      target && target.show();
-      currentPlayingViewContextDispatch({
-        type: CurrentPlayingViewTypes.ChangeVideo,
-        currentPlaying: {
-          videoId,
-          videoUrl: '',
-          thumbnailUrl,
-          title,
-        },
-      });
-      getVideoUrl(videoId);
-    } catch (error) {
-      console.log(error);
-    }
+  const onEnd = () => {
+    onNext();
   };
   const onError = (error: any) => {
     const {videoUrl} = currentPlaying;
@@ -283,7 +266,7 @@ const VideoPlayer = (
   );
 
   /**
-   * Custom Methods
+   * Hide playing Animation
    */
   const hideCurrentAnim = useCallback(() => {
     const prevIndex = videoItems.findIndex(
@@ -295,6 +278,10 @@ const VideoPlayer = (
       target.reset();
     }
   }, [currentPlaying, videoItems]);
+  /**
+   * Get video URL
+   * @param {string} videoId - video id
+   */
   const getVideoUrl = async (videoId: string) => {
     try {
       if (gvuAbortControllerRef.current) {
@@ -338,6 +325,8 @@ const VideoPlayer = (
 
         if (videoUrl) {
           setVideoUrl(videoUrl);
+          // reset failed times
+          getVideoUrlfailedTimes.current = 0;
           if (!isPlaying) {
             setIsPlaying(true);
           }
@@ -345,13 +334,10 @@ const VideoPlayer = (
       }
     } catch (error) {
       console.log(error);
-      const prevIndex = videoItems.findIndex(
-        (item) => item.videoId === videoId,
-      );
-      const target = getPlayingAnimRef(prevIndex);
-      if (prevIndex !== -1 && target) {
-        target.hide();
-        target.reset();
+      // if cannot get current video url and failed times are under 5 times, automatically play next video
+      if (getVideoUrlfailedTimes.current <= 5) {
+        getVideoUrlfailedTimes.current += 1;
+        onNext();
       }
     } finally {
       fwpAbortControllerRef.current = null;
@@ -359,31 +345,57 @@ const VideoPlayer = (
       gvuAbortControllerRef.current = null;
     }
   };
+  /**
+   * Set player status
+   * @param {boolean} status - status
+   */
   const setPlayerStatus = (status: boolean) => {
     setIsPlaying(status);
   };
-  // useTraceUpdate({
-  //   videoUrl,
-  //   isPlaying,
-  //   muted,
-  //   duration,
-  //   playableDuration,
-  //   seeking,
-  //   seekPosition,
-  //   seekOffset,
-  //   currentTime,
-  //   toggleControls,
-  //   videoId,
-  //   videoItems,
-  //   currentPlaying,
-  // });
+  /**
+   * Change current playing video
+   * @param index - video index
+   */
+  const changeCurrentPlaying = async (index: number) => {
+    try {
+      const {videoId, thumbnailUrl, title} = videoItems[index];
 
+      if (videoListRef.current && index !== -1) {
+        videoListRef.current.scrollToIndex({index});
+      }
+      hideCurrentAnim();
+      const target = getPlayingAnimRef(index);
+      target && target.show();
+
+      currentPlayingViewContextDispatch({
+        type: CurrentPlayingViewTypes.ChangeVideo,
+        currentPlaying: {
+          videoId,
+          videoUrl: '',
+          thumbnailUrl,
+          title,
+        },
+      });
+      await getVideoUrl(videoId);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  /**
+   * Pause Event
+   */
   const onPause = () => {
     setIsPlaying(false);
   };
+  /**
+   * Play Event
+   */
   const onPlay = () => {
     setIsPlaying(true);
   };
+  /**
+   * Change to previous video
+   */
   const onPrevious = async () => {
     try {
       const {videoId: currentPlayingID} = currentPlaying;
@@ -395,29 +407,14 @@ const VideoPlayer = (
       } else {
         index -= 1;
       }
-      const {videoId, thumbnailUrl, title} = videoItems[index];
-
-      if (videoListRef.current && index !== -1) {
-        videoListRef.current.scrollToIndex({index});
-      }
-      hideCurrentAnim();
-      const target = getPlayingAnimRef(index);
-      target && target.show();
-
-      currentPlayingViewContextDispatch({
-        type: CurrentPlayingViewTypes.ChangeVideo,
-        currentPlaying: {
-          videoId,
-          videoUrl: '',
-          thumbnailUrl,
-          title,
-        },
-      });
-      getVideoUrl(videoId);
+      await changeCurrentPlaying(index);
     } catch (error) {
       console.log(error);
     }
   };
+  /**
+   * Change to next video
+   */
   const onNext = async () => {
     try {
       const {videoId: currentPlayingID} = currentPlaying;
@@ -429,33 +426,21 @@ const VideoPlayer = (
       } else {
         index += 1;
       }
-      const {videoId, thumbnailUrl, title} = videoItems[index];
-
-      if (videoListRef.current && index !== -1) {
-        videoListRef.current.scrollToIndex({index});
-      }
-      hideCurrentAnim();
-      const target = getPlayingAnimRef(index);
-      target && target.show();
-
-      currentPlayingViewContextDispatch({
-        type: CurrentPlayingViewTypes.ChangeVideo,
-        currentPlaying: {
-          videoId,
-          videoUrl: '',
-          thumbnailUrl,
-          title,
-        },
-      });
-      getVideoUrl(videoId);
+      await changeCurrentPlaying(index);
     } catch (error) {
       console.log(error);
     }
   };
+  /**
+   * Mini player mode
+   */
   const onMinify = () => {
     minify();
     hideControls();
   };
+  /**
+   * Hide video controls
+   */
   const hideControls = () => {
     Animated.timing(opacityAnim, {
       toValue: 0,
@@ -465,6 +450,9 @@ const VideoPlayer = (
       setToggleControls(false);
     });
   };
+  /**
+   * Show video controls
+   */
   const showControls = () => {
     setToggleControls(true);
     Animated.timing(opacityAnim, {
@@ -473,6 +461,9 @@ const VideoPlayer = (
       useNativeDriver: false,
     }).start();
   };
+  /**
+   * Toggle video controls
+   */
   const onToggleControls = () => {
     if (toggleControls) {
       hideControls();
@@ -480,12 +471,21 @@ const VideoPlayer = (
       showControls();
     }
   };
+  /**
+   * Disable video muted
+   */
   const onVolumnUp = () => {
     setMuted(false);
   };
+  /**
+   * Enable video muted
+   */
   const onVolumnOff = () => {
     setMuted(true);
   };
+  /**
+   * seekbar circle zoom on animation
+   */
   const zoomOnSeekCircle = () => {
     Animated.parallel([
       Animated.spring(seekCircleZoomAnim, {
@@ -502,6 +502,9 @@ const VideoPlayer = (
       }),
     ]).start();
   };
+  /**
+   * seekbar circle zoom onut animation
+   */
   const zoomOutSeekCircle = () => {
     Animated.parallel([
       Animated.spring(seekCircleZoomAnim, {
@@ -518,20 +521,33 @@ const VideoPlayer = (
       }),
     ]).start();
   };
+  /**
+   * Hide video controls timer
+   */
   const setTimer = () => {
     timerRef.current = setTimeout(() => {
       hideControls();
     }, 3000);
   };
+  /**
+   * Clear hide video controls timer
+   */
   const clearTimer = () => {
     clearTimeout(timerRef.current);
   };
+  /**
+   * auto start hide controls timer when video is playing
+   */
   useEffect(() => {
     if (toggleControls && isPlaying) {
       setTimer();
     }
     return () => clearTimer();
   }, [toggleControls, isPlaying]);
+  /**
+   * check video is in the favorites list or not
+   * @returns {boolean} isLike
+   */
   const isLike = useCallback(
     () =>
       favorites.videos.findIndex(
@@ -539,6 +555,10 @@ const VideoPlayer = (
       ) !== -1,
     [currentPlaying, favorites],
   );
+  /**
+   * get current playing item
+   * @returns {object} current playing video
+   */
   const getCurrentItem = useCallback(() => {
     const {videoId: currentPlayingID} = currentPlaying;
     let index = videoItems.findIndex(
