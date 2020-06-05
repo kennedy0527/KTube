@@ -8,11 +8,11 @@ Youtube Background Music App
 
 git clone this repo
 
-go to `Google Colud Platform` to create your project with `YouTube Data API v3`
+go to [Google Colud Platform](https://cloud.google.com) to create your project with `YouTube Data API v3`
 
-then create OAuth 2.0 credential with type `iOS`
+then create `OAuth 2.0 credential` with type `iOS`
 
-create `.env` file under project folder, then put your client id like below
+create `.env` file under `project folder`, then put your `client id` like below
 
 ```
   IOS_CLIENT_ID=your client id
