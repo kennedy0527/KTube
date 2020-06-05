@@ -257,8 +257,7 @@ export default () => {
   }, []);
 
   useEffect(() => {
-    if (visible && !isReverse) {
-      // console.log('visible', -deviceScreenHeight);
+    if (visible && !isReverse && firstShow) {
       Animated.timing(panYAnim, {
         toValue: -deviceScreenHeight,
         duration: 700,
@@ -266,19 +265,19 @@ export default () => {
         easing: Easing.out(Easing.bezier(0.05, 0.96, 0.51, 0.97)),
         useNativeDriver: false,
       }).start(() => {
-        // videoPlayerRef.current &&
-        //   videoPlayerRef.current!.setVideo(currentPlaying);
         videoPlayerRef.current &&
           videoPlayerRef.current!.getVideoUrl(currentPlaying.videoId);
         setIsReverse(true);
         !hasNotch() && StatusBar.setHidden(true, 'fade');
         setFirstShow(false);
       });
+    } else if (visible) {
+      videoPlayerRef.current &&
+        videoPlayerRef.current!.getVideoUrl(currentPlaying.videoId);
     }
-  }, [visible, currentPlaying]);
+  }, [visible, currentPlaying, firstShow]);
   useEffect(() => {
     if (visible && !firstShow) {
-      console.log('videoItems');
       Animated.timing(panYAnim, {
         toValue: -deviceScreenHeight,
         duration: 500,
