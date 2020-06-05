@@ -51,4 +51,8 @@ some code is pretty ugly I know, so feel free to give some advices to me :D
 
 # Credits
 
-Youtube URL extraction algorithms are inspired by [youtube-dl Project]('https://github.com/ytdl-org/youtube-dl)
+Youtube URL extraction algorithms are inspired by [youtube-dl Project](https://github.com/ytdl-org/youtube-dl)
+
+# License
+
+KTube is available under the MIT license. See the [LICENSE](LICENSE) file for more information.
