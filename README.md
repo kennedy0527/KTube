@@ -6,7 +6,7 @@ Youtube Background Music App
 
 # Usage
 
-git clone this repo
+## Before you start
 
 go to [Google Cloud Platform](https://cloud.google.com) to create your project with `YouTube Data API v3`
 
@@ -18,7 +18,18 @@ create `.env` file under `project folder`, then put your `client id` like below
   IOS_CLIENT_ID=your client id
 ```
 
-then feel free to test it !
+## Build
+
+```
+  yarn install
+  cd ios & pod install
+```
+
+You can now run the app with
+
+```
+  npx react-native run-ios
+```
 
 # Functionality
 
@@ -35,7 +46,7 @@ then feel free to test it !
 - performance improve, especially `Flatlist`
 - Maybe fully abandon to use Youtube Data API because it's useless..., need to find a way to get playlist data
 
-# Found Issue
+# Known Issue
 
 - App in background (video stop) for long time, can not be able to restart video from the control center.
 
