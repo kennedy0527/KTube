@@ -119,6 +119,8 @@ export default (props: Props) => {
       data={favorites}
       ItemSeparatorComponent={() => <Divider style={styles.divider} />}
       renderItem={renderFavorites}
+      initialNumToRender={10}
+      maxToRenderPerBatch={2}
       ListHeaderComponent={ListHeaderComponent || null}
       ListFooterComponent={() => (
         <Layout

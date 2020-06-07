@@ -232,6 +232,8 @@ const VideosList = memo(
         ref={listRef}
         data={videoItems}
         renderItem={renderVideos}
+        initialNumToRender={8}
+        maxToRenderPerBatch={2}
         refreshControl={
           <RefreshControl
             tintColor={usetheme['text-hint-color']}
