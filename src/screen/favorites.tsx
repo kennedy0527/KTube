@@ -43,9 +43,10 @@ export default ({navigation}: {navigation: FavoriteScreenNavigationProp}) => {
   const {visible, currentPlaying, dispatch} = useContext(
     CurrentPlayingViewContext,
   );
-  const [favoriteVideos, setFavoritesVideos] = useState<PlaylistItemType[]>([]);
-
   const {favorites, dispatch: userDataDispatch} = useContext(UserDataContext);
+  const [favoriteVideos, setFavoritesVideos] = useState<PlaylistItemType[]>(
+    favorites.videos,
+  );
 
   useEffect(() => {
     if (favorites.sort === 0) {
