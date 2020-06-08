@@ -18,6 +18,7 @@ import {useFocusEffect} from '@react-navigation/native';
 import Carousel, {ParallaxImage} from 'react-native-snap-carousel';
 import {StackNavigationProp} from '@react-navigation/stack';
 import Modal from 'react-native-modal';
+import {isEqual} from 'lodash';
 import {CurrentPlayingViewContext} from '../context/currentplayingview-context';
 import {UserDataContext} from '../context/userdata-context';
 import CustomeTopNavigation from '../components/customtopnaviagtion';
@@ -30,6 +31,7 @@ import {
 } from '../utils/usestorage';
 import FavoritesList from '../components/favoriteslist';
 import {RootStackParamList} from '../navigation/navigation';
+import useTraceUpdate from '../utils/usetraceupdate';
 
 const {width: screenWidth} = Dimensions.get('window');
 
@@ -41,7 +43,7 @@ export default ({
   navigation: HomeScreenNavigationProp;
 }): React.ReactElement => {
   const [playlists, setPlaylists] = useState<
-    (PlaylistsStorage | {type: 'more'})[] | []
+    (Partial<PlaylistsStorage> | {type: 'more'})[] | []
   >([]);
 
   const [limitFavorite, setLimitFavorites] = useState<PlaylistItemType>([]);
@@ -51,7 +53,10 @@ export default ({
   const {visible, dispatch} = useContext(CurrentPlayingViewContext);
   const {favorites} = useContext(UserDataContext);
   const styles = useStyleSheet(themedStyles);
-
+  useTraceUpdate({
+    playlists,
+    limitFavorite,
+  });
   useFocusEffect(
     useCallback(() => {
       onGetDatas();
@@ -66,13 +71,25 @@ export default ({
   const getPlaylistsFromStorage = async () => {
     try {
       const storagePlaylists = await getPlaylists();
-      const showPlaylists: (PlaylistsStorage | {type: 'more'})[] = [
-        ...storagePlaylists.reverse().slice(0, 3),
-      ];
+
+      const showPlaylists: (
+        | Partial<PlaylistsStorage>
+        | {type: 'more'}
+      )[] = storagePlaylists
+        .map((sp) => ({
+          id: sp.id,
+          title: sp.title,
+          thumbnail: sp.thumbnail,
+          dateTime: sp.dateTime,
+        }))
+        .reverse()
+        .slice(0, 3);
       if (storagePlaylists.length >= 3) {
         showPlaylists.push({type: 'more'});
       }
-      setPlaylists(showPlaylists);
+      if (!isEqual(playlists, showPlaylists)) {
+        setPlaylists(showPlaylists);
+      }
     } catch (error) {
       console.log(error);
     }
