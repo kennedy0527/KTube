@@ -1,10 +1,9 @@
-import React, {useContext, useState, useCallback, useEffect} from 'react';
+import React, {useContext, useState, useCallback} from 'react';
 import {TouchableOpacity, SafeAreaView} from 'react-native';
 import {
   Layout,
   Text,
   useTheme,
-  TopNavigationAction,
   StyleService,
   useStyleSheet,
   Button,
@@ -45,16 +44,8 @@ export default ({navigation}: {navigation: FavoriteScreenNavigationProp}) => {
   );
   const {favorites, dispatch: userDataDispatch} = useContext(UserDataContext);
   const [favoriteVideos, setFavoritesVideos] = useState<PlaylistItemType[]>(
-    favorites.videos,
+    favorites.sort === 0 ? favorites.videos : [...favorites.videos].reverse(),
   );
-
-  useEffect(() => {
-    if (favorites.sort === 0) {
-      setFavoritesVideos(favorites.videos);
-    } else {
-      setFavoritesVideos([...favorites.videos].reverse());
-    }
-  }, [favorites]);
 
   const goBack = () => {
     navigation.goBack();
@@ -112,12 +103,16 @@ export default ({navigation}: {navigation: FavoriteScreenNavigationProp}) => {
     }
   }, [favoriteVideos]);
   const onSortPress = useCallback(() => {
-    // console.log(favorites.sort);
     userDataDispatch({
       type: UserDataTypes.SET_SORT,
       sort: favorites.sort === 0 ? 1 : 0,
     });
     saveFavorites(favorites.videos, favorites.sort === 0 ? 1 : 0);
+    if (favorites.sort === 0) {
+      setFavoritesVideos([...favorites.videos].reverse());
+    } else {
+      setFavoritesVideos(favorites.videos);
+    }
   }, [favorites]);
   return (
     <SafeAreaView style={styles.wrapper}>
