@@ -119,6 +119,8 @@ export default (props: Props) => {
       data={favorites}
       ItemSeparatorComponent={() => <Divider style={styles.divider} />}
       renderItem={renderFavorites}
+      initialNumToRender={10}
+      maxToRenderPerBatch={2}
       ListHeaderComponent={ListHeaderComponent || null}
       ListFooterComponent={() => (
         <Layout
@@ -147,6 +149,7 @@ export default (props: Props) => {
 const themedStyles = StyleService.create({
   listItem: {
     paddingVertical: 6,
+    paddingHorizontal: 18,
   },
   itemTitle: {marginHorizontal: 8},
   thumbnailContainer: {
@@ -179,7 +182,7 @@ const themedStyles = StyleService.create({
   divider: {
     backgroundColor: 'border-favorite-color',
     height: StyleSheet.hairlineWidth,
-    width: screenWidth - 85,
+    width: screenWidth - 96,
     alignSelf: 'flex-end',
     marginHorizontal: 10,
   },

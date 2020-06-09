@@ -1,10 +1,9 @@
-import React, {useContext, useState, useCallback, useEffect} from 'react';
+import React, {useContext, useState, useCallback} from 'react';
 import {TouchableOpacity, SafeAreaView} from 'react-native';
 import {
   Layout,
   Text,
   useTheme,
-  TopNavigationAction,
   StyleService,
   useStyleSheet,
   Button,
@@ -43,23 +42,21 @@ export default ({navigation}: {navigation: FavoriteScreenNavigationProp}) => {
   const {visible, currentPlaying, dispatch} = useContext(
     CurrentPlayingViewContext,
   );
-  const [favoriteVideos, setFavoritesVideos] = useState<PlaylistItemType[]>([]);
-
   const {favorites, dispatch: userDataDispatch} = useContext(UserDataContext);
-
-  useEffect(() => {
-    if (favorites.sort === 0) {
-      setFavoritesVideos(favorites.videos);
-    } else {
-      setFavoritesVideos([...favorites.videos].reverse());
-    }
-  }, [favorites]);
+  const [favoriteVideos, setFavoritesVideos] = useState<PlaylistItemType[]>(
+    favorites.sort === 0 ? favorites.videos : [...favorites.videos].reverse(),
+  );
 
   const goBack = () => {
     navigation.goBack();
   };
   const CustomBackAction = (): React.ReactElement => (
-    <TopNavigationAction icon={BackIcon} onPress={goBack} />
+    <TouchableOpacity onPress={goBack}>
+      <Layout style={styles.backActionContainer}>
+        <BackIcon style={styles.backIcon} fill={usetheme['text-basic-color']} />
+        <Text category={'s1'}>Home</Text>
+      </Layout>
+    </TouchableOpacity>
   );
   const onPlayPress = useCallback(async () => {
     try {
@@ -106,12 +103,16 @@ export default ({navigation}: {navigation: FavoriteScreenNavigationProp}) => {
     }
   }, [favoriteVideos]);
   const onSortPress = useCallback(() => {
-    // console.log(favorites.sort);
     userDataDispatch({
       type: UserDataTypes.SET_SORT,
       sort: favorites.sort === 0 ? 1 : 0,
     });
     saveFavorites(favorites.videos, favorites.sort === 0 ? 1 : 0);
+    if (favorites.sort === 0) {
+      setFavoritesVideos([...favorites.videos].reverse());
+    } else {
+      setFavoritesVideos(favorites.videos);
+    }
   }, [favorites]);
   return (
     <SafeAreaView style={styles.wrapper}>
@@ -193,10 +194,19 @@ const themedStyles = StyleService.create({
   },
   container: {
     flex: 1,
-    marginHorizontal: 10,
+  },
+  backActionContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  backIcon: {
+    width: 22,
+    height: 22,
+    marginRight: 5,
   },
   listHeader: {
     marginTop: 5,
+    marginHorizontal: 8,
   },
   btn: {
     flex: 1,
@@ -211,7 +221,7 @@ const themedStyles = StyleService.create({
     marginHorizontal: 10,
   },
   listHeaderTexts: {
-    marginHorizontal: 15,
+    marginLeft: 10,
   },
   sortContainer: {
     justifyContent: 'center',

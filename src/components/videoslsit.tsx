@@ -176,7 +176,6 @@ export default ({
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
-    marginHorizontal: 10,
   },
   thumbnail: {width: '100%', height: '100%'},
   thumbnailView: {
@@ -202,6 +201,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: 'transparent',
     alignItems: 'center',
+    paddingHorizontal: 18,
   },
   videoTitle: {
     flex: 1,

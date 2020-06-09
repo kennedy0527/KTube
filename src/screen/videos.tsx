@@ -8,7 +8,13 @@ import React, {
   useMemo,
   useCallback,
 } from 'react';
-import {SafeAreaView, View, RefreshControl, Alert} from 'react-native';
+import {
+  SafeAreaView,
+  View,
+  RefreshControl,
+  Alert,
+  TouchableOpacity,
+} from 'react-native';
 import {
   Layout,
   Text,
@@ -84,6 +90,7 @@ const VideoRow = ({
   return useMemo(
     () => (
       <ListItem
+        style={styles.listItem}
         title={() => (
           <Text style={{marginHorizontal: 8}} numberOfLines={2} category={'s2'}>
             {title}
@@ -142,6 +149,12 @@ function propsAreEqual(prev: VideosListProps, next: VideosListProps) {
     return false;
   }
   if (prev.videoItems !== next.videoItems) {
+    return false;
+  }
+  if (prev.playlistDateTime !== next.playlistDateTime) {
+    return false;
+  }
+  if (prev.playlistTitle !== next.playlistTitle) {
     return false;
   }
   return true;
@@ -219,6 +232,8 @@ const VideosList = memo(
         ref={listRef}
         data={videoItems}
         renderItem={renderVideos}
+        initialNumToRender={8}
+        maxToRenderPerBatch={2}
         refreshControl={
           <RefreshControl
             tintColor={usetheme['text-hint-color']}
@@ -276,6 +291,7 @@ const VideosList = memo(
   propsAreEqual,
 );
 export default ({route, navigation}: Props): React.ReactElement => {
+  const usetheme = useTheme();
   const styles = useStyleSheet(themedStyles);
   const [videoItems, setVideoItems] = useState<PlaylistItemType[]>([]);
   const [isFetching, setIsFetching] = useState(false);
@@ -328,19 +344,6 @@ export default ({route, navigation}: Props): React.ReactElement => {
       setIsFetching(true);
       const playlistItems = (await fetchPlaylistItems(playlistId)) || [];
 
-      // const videos = [];
-
-      // for (const playlistItem of playlistItems) {
-      //   const {
-      //     contentDetails: {videoId},
-      //   } = playlistItem;
-      //   const {playerResp} = await fetchWebPage(videoId);
-      //   const videoInfo = analyzeVideoInfo(playerResp);
-      //   if (videoInfo) {
-      //     videos.push(videoInfo);
-      //   }
-      // }
-
       const getVideoIndo = async (videoId: string) => {
         try {
           const {playerResp} = await fetchWebPage(videoId);
@@ -359,7 +362,14 @@ export default ({route, navigation}: Props): React.ReactElement => {
         getVideoIndo(playlistItem.contentDetails.videoId),
       );
       const videosInfo = await Promise.all(promises);
-      const videos = videosInfo.filter((vi) => vi !== undefined);
+
+      const notUndefined = (
+        value: PlaylistItemType | undefined,
+      ): value is PlaylistItemType => {
+        return value !== undefined;
+      };
+
+      const videos = videosInfo.filter(notUndefined);
       // console.log(videos.filter(Boolean));
       // console.timeEnd();
       setIsFetching(false);
@@ -380,7 +390,12 @@ export default ({route, navigation}: Props): React.ReactElement => {
   };
 
   const CustomBackAction = (): React.ReactElement => (
-    <TopNavigationAction icon={BackIcon} onPress={goBack} />
+    <TouchableOpacity onPress={goBack}>
+      <Layout style={styles.backActionContainer}>
+        <BackIcon style={styles.backIcon} fill={usetheme['text-basic-color']} />
+        <Text category={'s1'}>Home</Text>
+      </Layout>
+    </TouchableOpacity>
   );
 
   const onPlayPress = async () => {
@@ -467,7 +482,15 @@ const themedStyles = StyleService.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    marginHorizontal: 10,
+  },
+  backActionContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  backIcon: {
+    width: 22,
+    height: 22,
+    marginRight: 5,
   },
   videoThumbnail: {
     height: '100%',
@@ -503,11 +526,15 @@ const themedStyles = StyleService.create({
     flex: 1,
     backgroundColor: 'background-basic-color-1',
   },
+  listItem: {
+    paddingHorizontal: 18,
+  },
   listHeader: {
     marginTop: 5,
+    marginHorizontal: 8,
   },
   listHeaderTexts: {
-    marginHorizontal: 15,
+    marginHorizontal: 8,
   },
   listHeaderDescText: {
     marginTop: 5,

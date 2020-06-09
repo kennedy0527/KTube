@@ -99,8 +99,7 @@ export default ({
                   scaleY: thumbnailScaleYAnim,
                 },
               ],
-              width: 60,
-              height: 60,
+
               opacity: thumbnailOpacityAnim,
             },
           ]}
@@ -150,6 +149,8 @@ const styles = StyleSheet.create({
     bottom: 0,
     resizeMode: 'cover',
     borderRadius: 10,
+    width: 60,
+    height: 60,
   },
   currentPlayingView: {
     position: 'absolute',
@@ -194,5 +195,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     opacity: 0,
   },
-  textTickerContainer: {width: '100%'},
+  textTickerContainer: {
+    width: screenWidth - 60 - 40 - 60,
+  },
 });

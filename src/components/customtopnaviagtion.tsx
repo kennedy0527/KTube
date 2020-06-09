@@ -1,4 +1,10 @@
-import React, {useState, useContext, useMemo, useCallback} from 'react';
+import React, {
+  useState,
+  useContext,
+  useMemo,
+  useCallback,
+  useEffect,
+} from 'react';
 import {
   Button,
   TopNavigation,
@@ -10,9 +16,9 @@ import {
 import {ThemeContext} from '../context/theme-context';
 import {AuthContext} from '../context/auth-context';
 import {LightIcon, DarkIcon, SignOutIcon, DownloadIcon} from './icons';
-
 import ImportModal from '../components/importmodal';
 import useYoutube from '../utils/useyoutube';
+import useTraceUpdate from '../utils/usetraceupdate';
 interface Props {
   customLeft?: () => React.ReactElement;
   title?: string;
@@ -40,7 +46,16 @@ export default ({
   //   analyzeVideoInfo,
   //   analyzeVideoUrl,
   // } = useYoutube();
-
+  useTraceUpdate({
+    theme,
+    currentUser,
+    userMenuVisible,
+    importModalVisible,
+    mode,
+    customLeft,
+    alignment,
+    refreshPlaylist,
+  });
   const ToogleThemeAction = () => {
     return (
       <MenuItem
@@ -60,7 +75,14 @@ export default ({
       activeOpacity={0.5}
     />
   );
-  const UserMenus = useCallback(() => {
+  const onSignOut = () => {
+    toggleUserMenu();
+    signOut();
+  };
+  const onImportPlaylists = () => {
+    setImportModalVisible(true);
+  };
+  const UserMenus = () => {
     if (currentUser) {
       return (
         <OverflowMenu
@@ -70,19 +92,19 @@ export default ({
           <MenuItem
             accessoryLeft={SignOutIcon}
             title="Sign Out"
-            onPress={() => {
-              toggleUserMenu();
-              signOut();
-            }}
+            onPress={onSignOut}
           />
           <MenuItem
             accessoryLeft={DownloadIcon}
             title="Import Playlists"
-            onPress={() => {
-              setImportModalVisible(true);
-            }}
+            onPress={onImportPlaylists}
           />
-          {ToogleThemeAction()}
+          {/* {ToogleThemeAction()} */}
+          <MenuItem
+            accessoryLeft={theme === 'light' ? DarkIcon : LightIcon}
+            title={theme === 'light' ? 'Dark Mode' : 'Light Mode'}
+            onPress={toggleTheme}
+          />
           {/* <MenuItem
             accessoryLeft={DownloadIcon}
             title="Test "
@@ -108,7 +130,7 @@ export default ({
         Sign In
       </Button>
     );
-  }, [userMenuVisible, theme, currentUser]);
+  };
   const onImportModalDismiss = () => {
     setImportModalVisible(false);
   };
@@ -128,7 +150,7 @@ export default ({
   return (
     <>
       <TopNavigation
-        title={title ? title : ''}
+        style={{paddingHorizontal: 10}}
         alignment={alignment || 'center'}
         accessoryLeft={customLeft ? customLeft : ToogleThemeAction}
         accessoryRight={UserMenus}
